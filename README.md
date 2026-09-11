@@ -29,3 +29,12 @@ HyperOS Design Standard 긴급 수정과 사주/타로 입력 및 결과 UX를 �
 - `design/native/`: 공용 Compose 디자인 컴포넌트
 
 `ANDROID_USER_HOME`에 디버그 키스토어가 준비된 환경에서 Android Gradle 빌드를 실행합니다.
+
+## 유지보수 문서와 현재 배포 근거
+
+- [팀별 인수인계 색인](docs/README.md): 13개 팀 문서, 소유권, 데이터 계약, 후속 과제
+- [현재 배포 근거](evidence/REPORT.md) 및 [현재 manifest](evidence/release-manifest.json): R2 APK와 검수 범위
+- [문서 SHA 목록](docs/SHA256SUMS)과 [제출 원본/통합본 목록](docs/manifest.json)
+- [미완료 작업](docs/BACKLOG.md): A-01/T-05/R-01은 별도 Android/QA 승인 전까지 미완료
+
+앱 기준 커밋은 `b4ffe8718bf01b02930468451baa4ecab45f1db3`이다. 문서 통합 커밋은 APK를 다시 빌드하거나 앱 태그를 이동하지 않는다. 이전 R1 보고서와 manifest는 [이력 보관소](evidence/history/r1/README.md)에 원문 바이트로 보존한다.

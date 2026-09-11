@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "baselineCodeCommit": "b4ffe8718bf01b02930468451baa4ecab45f1db3",
+  "baselineTag": "v0.1-dev-20260911-r2",
+  "artifactSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+  "documents": [
+    {
+      "team": "android-platform",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/android-platform/README.md",
+      "sourceSha256": "db7040f9d15edd4372b06cedc8fdd80d78dabbd4b75d7a1d130079610aaa10bc",
+      "targetPath": "docs/android-platform/README.md",
+      "integratedSha256": "db7040f9d15edd4372b06cedc8fdd80d78dabbd4b75d7a1d130079610aaa10bc",
+      "status": "INTEGRATED",
+      "owner": "android-platform"
+    },
+    {
+      "team": "coordination",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/coordination/README.md",
+      "sourceSha256": "2d90007df6f4883b1214e704355b6612c037f37e33593607cc1329b5d4247995",
+      "targetPath": "docs/coordination/README.md",
+      "integratedSha256": "2d90007df6f4883b1214e704355b6612c037f37e33593607cc1329b5d4247995",
+      "status": "INTEGRATED",
+      "owner": "coordination"
+    },
+    {
+      "team": "design-system",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/design-system/README.md",
+      "sourceSha256": "082e89da3cdae9e263c53f5d31afaff6d0c9ab6fd5c09a9126637c997c40dde3",
+      "targetPath": "docs/design-system/README.md",
+      "integratedSha256": "082e89da3cdae9e263c53f5d31afaff6d0c9ab6fd5c09a9126637c997c40dde3",
+      "status": "INTEGRATED",
+      "owner": "design-system"
+    },
+    {
+      "team": "premium-design",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/premium-design/README.md",
+      "sourceSha256": "6ff8026d41f9ed895dcb103d7826fc772f32ec12177ae8ec3cfc0d3ba085df6c",
+      "targetPath": "docs/premium-design/README.md",
+      "integratedSha256": "6ff8026d41f9ed895dcb103d7826fc772f32ec12177ae8ec3cfc0d3ba085df6c",
+      "status": "INTEGRATED",
+      "owner": "premium-design"
+    },
+    {
+      "team": "qa",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/qa/README.md",
+      "sourceSha256": "8765a5e5905c82e2078951ebe1d73fdc7e5d978e49768928274d5e96969491c5",
+      "targetPath": "docs/qa/README.md",
+      "integratedSha256": "8765a5e5905c82e2078951ebe1d73fdc7e5d978e49768928274d5e96969491c5",
+      "status": "INTEGRATED",
+      "owner": "qa"
+    },
+    {
+      "team": "records-data",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/records-data/README.md",
+      "sourceSha256": "6916de4795dcf87c1805d8e0272f9b2f4309785ebe5c4be7b73093abcdf73e23",
+      "targetPath": "docs/records-data/README.md",
+      "integratedSha256": "6916de4795dcf87c1805d8e0272f9b2f4309785ebe5c4be7b73093abcdf73e23",
+      "status": "INTEGRATED",
+      "owner": "records-data"
+    },
+    {
+      "team": "release-operations",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/release-operations/README.md",
+      "sourceSha256": "3ff899a2aebe6eaea7c1e165feceee5711a8fea2ce71ec3650b44e90af4bebe7",
+      "targetPath": "docs/release-operations/README.md",
+      "integratedSha256": "3ff899a2aebe6eaea7c1e165feceee5711a8fea2ce71ec3650b44e90af4bebe7",
+      "status": "INTEGRATED",
+      "owner": "release-operations"
+    },
+    {
+      "team": "saju-engine-contract",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/saju-engine-contract/README.md",
+      "sourceSha256": "4875f12ceda7bbca9a051ace6f523365c3e2d9e138985efe4057534e0dab52bd",
+      "targetPath": "docs/saju-engine-contract/README.md",
+      "integratedSha256": "4875f12ceda7bbca9a051ace6f523365c3e2d9e138985efe4057534e0dab52bd",
+      "status": "INTEGRATED",
+      "owner": "saju-engine-contract"
+    },
+    {
+      "team": "saju-ui",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/saju-ui/README.md",
+      "sourceSha256": "753694f019022b5171c88ead0a66d670ec6a986451aa005bb8bd90083d1370fa",
+      "targetPath": "docs/saju-ui/README.md",
+      "integratedSha256": "753694f019022b5171c88ead0a66d670ec6a986451aa005bb8bd90083d1370fa",
+      "status": "INTEGRATED",
+      "owner": "saju-ui"
+    },
+    {
+      "team": "tarot-assets-accessibility",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/tarot-assets-accessibility/README.md",
+      "sourceSha256": "7bcdfb9bfd75aead91e9ce860ff8e86fd488fb5fca5d7a35c25b837807d7f724",
+      "targetPath": "docs/tarot-assets-accessibility/README.md",
+      "integratedSha256": "7bcdfb9bfd75aead91e9ce860ff8e86fd488fb5fca5d7a35c25b837807d7f724",
+      "status": "INTEGRATED",
+      "owner": "tarot-assets-accessibility"
+    },
+    {
+      "team": "tarot-flow",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/tarot-flow/README.md",
+      "sourceSha256": "9b1144e6f2469d01ae34e7f8baa383fb91444caf318d04a9542d80966377f09c",
+      "targetPath": "docs/tarot-flow/README.md",
+      "integratedSha256": "9b1144e6f2469d01ae34e7f8baa383fb91444caf318d04a9542d80966377f09c",
+      "status": "INTEGRATED",
+      "owner": "tarot-flow"
+    },
+    {
+      "team": "tarot-spreads",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/tarot-spreads/README.md",
+      "sourceSha256": "414d4cf98944e46d9aac4954e224a661456f73a71f75f7a047979bf4cd04c021",
+      "targetPath": "docs/tarot-spreads/README.md",
+      "integratedSha256": "8cdb2cf834187e8d17dcc13b9ca5df13eaa294da2ff2bcf8c7bcc46ed8f7e759",
+      "status": "INTEGRATED_WITH_CORRECTION",
+      "owner": "tarot-spreads"
+    },
+    {
+      "team": "traceability",
+      "sourcePath": "/Volumes/뽀그리/Project 먕/샤로먕/handoff/github-docs-20260911/traceability/README.md",
+      "sourceSha256": "c870cbf67457b100dd3f5d37789249af23d2439e1849ae8f2dadce43e8d686de",
+      "targetPath": "docs/traceability/README.md",
+      "integratedSha256": "c870cbf67457b100dd3f5d37789249af23d2439e1849ae8f2dadce43e8d686de",
+      "status": "INTEGRATED",
+      "owner": "traceability"
+    }
+  ],
+  "pendingCodeWork": [
+    "A-01",
+    "T-05",
+    "R-01"
+  ],
+  "unresolved": [
+    {
+      "area": "tarot-spreads",
+      "status": "DOCUMENTED_CORRECTION_PENDING_OWNER_REWRITE",
+      "detail": "Submitted adaptive/5-column 78-card claim conflicts with fixed 8x10 baseline; integrated warning added."
+    }
+  ]
+}

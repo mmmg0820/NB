@@ -1,0 +1,17 @@
+{
+  "artifact": "sharomyang-hyperos-final-debug.apk",
+  "apkSha256": "89d40ac05d74988c0d6e348b60199e91bd57b8e4800c3c6a81fc94d752ef2a7c",
+  "package": "com.hoscat.mtj.dev",
+  "versionCode": 1,
+  "versionName": "0.1-dev",
+  "signingCertificateSha256": "c0cdb6586cafab0ae49a721e27a7a9da5543bc672d474fd5303561c10550d3ab",
+  "sourceSnapshot": "source-snapshot.tar.gz",
+  "sourceSnapshotSha256": "61829673c1b1b13a2711f30ff18e66caf4ac1333acd3cb01f21c7f458e48c967",
+  "sourceManifestSha256": "c9ef839d3e082f98d5df0a7d44e650f6997ae4848310c1097d037589e5830485",
+  "designManifestSha256": "e1f6e64e7b56ed3243076fff255167cd33e8e10e11fe68cac9d99c93e633a878",
+  "spreadMappingSha256": "1cbf5a938eb542b7af78d850ed7506557e6f0a83cdea9726ecc369eed0c43034",
+  "unitTests": 92,
+  "emulator": "Pixel_10",
+  "buildStatus": "PASS",
+  "emulatorStatus": "PASS"
+}
