@@ -1,0 +1,12 @@
+serial=emulator-5556
+avd=Pixel_10
+model=sdk_gphone16k_arm64
+api=37
+wm_size=Physical size: 1080x2424
+wm_density=Physical density: 420
+font_scale=1.0
+installed_path=/data/app/~~f35qrt38W12NEcKslhryaw==/com.hoscat.mtj.dev-mcxzPhIaVyADzMiERIbQtg==/base.apk
+installed_base_sha256=89d40ac05d74988c0d6e348b60199e91bd57b8e4800c3c6a81fc94d752ef2a7c
+artifact_sha256=89d40ac05d74988c0d6e348b60199e91bd57b8e4800c3c6a81fc94d752ef2a7c
+package_    versionCode=1 minSdk=31 targetSdk=36
+focus=  mCurrentFocus=Window{175a7f7 u0 com.hoscat.mtj.dev/com.hoscat.mtj.dev.MainActivity}

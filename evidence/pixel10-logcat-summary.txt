@@ -1,0 +1,2 @@
+fatal_exceptions=0
+  mCurrentFocus=Window{abbcd79 u0 com.hoscat.mtj.dev/com.hoscat.mtj.dev.MainActivity}

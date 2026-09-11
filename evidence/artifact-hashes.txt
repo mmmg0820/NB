@@ -1,0 +1,4 @@
+89d40ac05d74988c0d6e348b60199e91bd57b8e4800c3c6a81fc94d752ef2a7c  /Users/thomaslee/Documents/Codex/2026-09-09/mtj-android-development/outputs/evidence/sharomyang-integrated-final-20260911/sharomyang-hyperos-final-debug.apk
+61829673c1b1b13a2711f30ff18e66caf4ac1333acd3cb01f21c7f458e48c967  /Users/thomaslee/Documents/Codex/2026-09-09/mtj-android-development/outputs/evidence/sharomyang-integrated-final-20260911/source-snapshot.tar.gz
+c9ef839d3e082f98d5df0a7d44e650f6997ae4848310c1097d037589e5830485  /Users/thomaslee/Documents/Codex/2026-09-09/mtj-android-development/outputs/evidence/sharomyang-integrated-final-20260911/source-manifest.sha256
+1cbf5a938eb542b7af78d850ed7506557e6f0a83cdea9726ecc369eed0c43034  /Users/thomaslee/Documents/Codex/2026-09-09/mtj-android-development/outputs/evidence/sharomyang-integrated-final-20260911/design-spread-mapping.json

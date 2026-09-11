@@ -1,0 +1,15 @@
+work/cell/design/native/MtjBottomActionScaffold.kt
+work/cell/android/app/src/main/java/com/hoscat/mtj/dev/MainActivity.kt
+work/cell/android/app/src/main/java/com/hoscat/mtj/dev/MtjHomeScreen.kt
+work/cell/android/app/src/main/java/com/hoscat/mtj/dev/RecordsScreen.kt
+work/cell/android/app/src/main/java/com/hoscat/mtj/dev/SajuChartDisplay.kt
+work/cell/android/app/src/main/java/com/hoscat/mtj/dev/TarotRecreationState.kt
+work/cell/android/app/src/main/java/com/hoscat/mtj/dev/TarotScreen.kt
+work/cell/android/app/src/main/java/com/hoscat/mtj/dev/TarotSelectionFocusReducer.kt
+work/cell/android/app/src/main/java/com/hoscat/mtj/dev/TarotSelectionGridContract.kt
+work/cell/android/app/src/main/java/com/hoscat/mtj/dev/TarotSpreadCategoryContract.kt
+work/cell/android/app/src/test/java/com/hoscat/mtj/dev/SajuChartDisplayTest.kt
+work/cell/android/app/src/test/java/com/hoscat/mtj/dev/TarotRecreationStateTest.kt
+work/cell/android/app/src/test/java/com/hoscat/mtj/dev/TarotSelectionGridContractTest.kt
+work/cell/android/app/src/test/java/com/hoscat/mtj/dev/TarotSpreadCategoryContractTest.kt
+work/cell/tarot/src/MtjTarotBridge.kt

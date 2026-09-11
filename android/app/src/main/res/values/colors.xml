@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="mtj_icon_background">#7B2345</color>
+    <color name="mtj_window_background">#FAFBFA</color>
+    <color name="mtj_system_bar">#FAFBFA</color>
+</resources>
