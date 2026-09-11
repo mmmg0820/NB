@@ -8,16 +8,23 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
@@ -52,6 +59,8 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
 import com.mtj.design.MtjBottomActionScaffold
 import com.mtj.design.MtjQuietPanel
@@ -169,6 +178,7 @@ internal fun TarotScreen(
                 deck == null -> CircularProgressIndicator()
                 result != null -> {
                     val snapshot = checkNotNull(result)
+                    var detailCardIndex by rememberSaveable(snapshot) { mutableStateOf<Int?>(null) }
                     val reduceMotion = remember { readReduceMotionDefault(context) }
                     var revealed by remember(snapshot) { mutableStateOf(reduceMotion) }
                     LaunchedEffect(snapshot) { revealed = true }
@@ -204,19 +214,9 @@ internal fun TarotScreen(
                                 TarotSpreadOverview(snapshot, Modifier.fillMaxWidth())
                             }
                         }
-                        items(snapshot.reading.cards, key = { it.order }) { card ->
-                            var meaningOpen by rememberSaveable(card.order) { mutableStateOf(false) }
-                            MtjQuietPanel {
-                                Row(
-                                    Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
-                                    Text("${card.order}. ${card.positionLabel}", style = MaterialTheme.typography.titleMedium)
-                                    TextButton({ meaningOpen = !meaningOpen }) {
-                                        Text(if (meaningOpen) "접기" else "해석 보기")
-                                    }
-                                }
+                        itemsIndexed(snapshot.reading.cards, key = { _, item -> item.order }) { index, card ->
+                            MtjQuietPanel(Modifier.clickable(role = Role.Button) { detailCardIndex = index }) {
+                                Text("${card.order}. ${card.positionLabel}", style = MaterialTheme.typography.titleMedium)
                                 TarotArt(
                                     card.cardId,
                                     card.nameKr,
@@ -224,11 +224,15 @@ internal fun TarotScreen(
                                     detailHeight = 248.dp,
                                 )
                                 Text("${card.nameKr} · ${card.directionLabel}", style = MaterialTheme.typography.titleMedium)
-                                if (meaningOpen) {
-                                    Text(card.meaningSnapshot, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                                }
                             }
                         }
+                    }
+                    detailCardIndex?.let { index ->
+                        TarotCardDetailViewer(
+                            cards = snapshot.reading.cards,
+                            initialIndex = index,
+                            onClose = { detailCardIndex = null },
+                        )
                     }
                 }
                 bridge != null -> {
@@ -949,6 +953,61 @@ private val TarotRecreationSaver = Saver<TarotRecreationState, Any>(
     save = { it.save() },
     restore = { TarotRecreationState.restore(it) },
 )
+
+/**
+ * Full-screen card-by-card viewer opened by tapping a card in the result list. Swiping left
+ * or right moves between cards when more than one was drawn; double-tapping the page or the
+ * close button dismisses back to the result screen.
+ */
+@Composable
+private fun TarotCardDetailViewer(
+    cards: List<SavedReadingCard>,
+    initialIndex: Int,
+    onClose: () -> Unit,
+) {
+    val pagerState = rememberPagerState(initialPage = initialIndex) { cards.size }
+    Dialog(
+        onDismissRequest = onClose,
+        properties = DialogProperties(usePlatformDefaultWidth = false, decorFitsSystemWindows = false),
+    ) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .pointerInput(Unit) { detectTapGestures(onDoubleTap = { onClose() }) },
+        ) {
+            HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize()) { page ->
+                val card = cards[page]
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Spacer(Modifier.height(48.dp))
+                    Text(
+                        "${card.order}. ${card.positionLabel}",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    TarotArt(
+                        card.cardId,
+                        card.nameKr,
+                        imageRotationDegrees = detailTarotCardRotation(card.directionLabel),
+                        detailHeight = 420.dp,
+                    )
+                    Text("${card.nameKr} · ${card.directionLabel}", style = MaterialTheme.typography.headlineSmall)
+                    Text(card.meaningSnapshot, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+            }
+            IconButton(onClick = onClose, modifier = Modifier.align(Alignment.TopEnd).padding(8.dp).size(48.dp)) {
+                Icon(Icons.Default.Close, contentDescription = "닫기")
+            }
+        }
+    }
+}
 
 /**
  * Small bounded in-memory cache so the same card's artwork is decoded once per process,
