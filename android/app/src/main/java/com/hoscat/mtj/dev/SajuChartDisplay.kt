@@ -1,6 +1,5 @@
 package com.hoscat.mtj.dev
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -29,7 +28,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.hoscat.core.model.DataTrustLevel
@@ -83,6 +84,14 @@ internal enum class SajuPillarGridMode { Standard, Compact }
 
 internal fun sajuPillarGridMode(maxWidth: Dp, fontScale: Float): SajuPillarGridMode =
     if (maxWidth < 360.dp || fontScale >= 1.3f) SajuPillarGridMode.Compact else SajuPillarGridMode.Standard
+
+internal fun sajuPillarCellWeight(display: SajuPillarDisplay, mode: SajuPillarGridMode): Float =
+    if (display.isUnknownHour && mode == SajuPillarGridMode.Standard) 1.35f else 1f
+
+internal fun sajuPillarFooterText(display: SajuPillarDisplay, mode: SajuPillarGridMode): String? =
+    display.elementText.takeIf {
+        !display.isUnknownHour && (mode == SajuPillarGridMode.Standard || display.isDayMaster)
+    }
 
 internal fun sajuChartAuthorityLabel(chart: SajuChart): String = when {
     chart.evidence.isVerified && chart.evidence.trustLevel == DataTrustLevel.ExternalAuthorityVerified -> "외부 기관 검증됨"
@@ -233,13 +242,19 @@ private fun PillarGrid(displays: List<SajuPillarDisplay>) {
             with(density) { measuredPx.toDp() } + 24.dp
         }
         val columns = sajuPillarColumnCount(maxWidth, measuredTileWidth, density.fontScale)
-        val tileMinHeight = if (mode == SajuPillarGridMode.Compact) 104.dp else 132.dp
+        val tileMinHeight = if (mode == SajuPillarGridMode.Compact) 104.dp else 112.dp
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
             displays.chunked(columns).forEach { rowDisplays ->
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     rowDisplays.forEach { display ->
-                        SajuPillarTile(display, mode, Modifier.weight(1f).heightIn(min = tileMinHeight))
+                        SajuPillarTile(
+                            display,
+                            mode,
+                            Modifier
+                                .weight(sajuPillarCellWeight(display, mode))
+                                .heightIn(min = tileMinHeight),
+                        )
                     }
                 }
             }
@@ -266,11 +281,11 @@ private fun SajuPillarTile(
                 }
             },
         shape = RoundedCornerShape(8.dp),
-        color = if (display.isDayMaster) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-        border = BorderStroke(
-            1.dp,
-            if (display.isDayMaster) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.outlineVariant,
-        ),
+        color = when {
+            display.isDayMaster -> MaterialTheme.colorScheme.secondaryContainer
+            display.isUnknownHour -> MaterialTheme.colorScheme.tertiaryContainer
+            else -> MaterialTheme.colorScheme.surfaceVariant
+        },
     ) {
         Column(
             Modifier.padding(horizontal = 8.dp, vertical = if (mode == SajuPillarGridMode.Compact) 8.dp else 10.dp),
@@ -279,25 +294,43 @@ private fun SajuPillarTile(
         ) {
             Text(display.role, style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
             if (display.isUnknownHour) {
-                Text(
-                    "시간 모름",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                )
+                UnavailablePillarState(display, mode)
             } else {
                 PillarGlyph(display.stemHanjaText, display.stemKoreanText.orEmpty(), mode)
                 PillarGlyph(display.branchHanjaText, display.branchKoreanText.orEmpty(), mode)
             }
-            if (mode == SajuPillarGridMode.Standard || display.isDayMaster || display.isUnknownHour) {
+            sajuPillarFooterText(display, mode)?.let { footerText ->
                 Text(
-                    display.elementText,
+                    footerText,
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun UnavailablePillarState(display: SajuPillarDisplay, mode: SajuPillarGridMode) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+    ) {
+        Text(
+            "시간 모름",
+            style = (if (mode == SajuPillarGridMode.Compact) MaterialTheme.typography.titleMedium
+            else MaterialTheme.typography.titleLarge).copy(lineBreak = LineBreak.Heading),
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        )
+        Text(
+            display.elementText,
+            style = MaterialTheme.typography.labelSmall.copy(lineBreak = LineBreak.Heading),
+            color = MaterialTheme.colorScheme.onTertiaryContainer,
+            textAlign = TextAlign.Center,
+        )
     }
 }
 
@@ -309,12 +342,18 @@ private fun PillarGlyph(hanja: String, korean: String, mode: SajuPillarGridMode)
             style = if (mode == SajuPillarGridMode.Compact) MaterialTheme.typography.titleMedium
             else MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Clip,
         )
         Text(
             korean,
             style = if (mode == SajuPillarGridMode.Compact) MaterialTheme.typography.labelMedium
             else MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            softWrap = false,
+            overflow = TextOverflow.Clip,
         )
     }
 }

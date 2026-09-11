@@ -61,6 +61,47 @@ class SajuChartDisplayTest {
         assertEquals(SajuPillarGridMode.Compact, sajuPillarGridMode(411.dp, 1.5f))
     }
 
+    @Test fun supportedWidthsKeepTwoColumnsForNativeLargeFontScales() {
+        listOf(320.dp, 360.dp, 411.dp).forEach { width ->
+            assertEquals(4, sajuPillarColumnCount(width, 140.dp, fontScale = 1f))
+            listOf(1.3f, 2f).forEach { scale ->
+                assertEquals(2, sajuPillarColumnCount(width, 140.dp, fontScale = scale))
+                assertEquals(SajuPillarGridMode.Compact, sajuPillarGridMode(width, scale))
+            }
+        }
+    }
+
+    @Test fun unknownHourCellGetsAdaptiveWidthOnlyOnStandardGrid() {
+        val displays = sajuChartPillarDisplays(chart(hourPillar = null))
+        val year = displays.single { it.role == "연주" }
+        val hour = displays.single { it.role == "시주" }
+
+        assertEquals(1f, sajuPillarCellWeight(year, SajuPillarGridMode.Standard))
+        assertTrue(sajuPillarCellWeight(hour, SajuPillarGridMode.Standard) > 1f)
+        assertEquals(1f, sajuPillarCellWeight(hour, SajuPillarGridMode.Compact))
+    }
+
+    @Test fun unknownHourNeverRepeatsExclusionCopyInFooter() {
+        val hour = sajuChartPillarDisplays(chart(hourPillar = null)).last()
+
+        SajuPillarGridMode.entries.forEach { mode ->
+            assertEquals(null, sajuPillarFooterText(hour, mode))
+        }
+        assertEquals("오행 산출 제외", hour.elementText)
+    }
+
+    @Test fun knownPillarFootersKeepTheirStandardAndCompactVisibility() {
+        val displays = sajuChartPillarDisplays(chart())
+
+        displays.forEach { display ->
+            assertEquals(display.elementText, sajuPillarFooterText(display, SajuPillarGridMode.Standard))
+            assertEquals(
+                display.elementText.takeIf { display.isDayMaster },
+                sajuPillarFooterText(display, SajuPillarGridMode.Compact),
+            )
+        }
+    }
+
     @Test fun generatedUnverifiedAuthorityUsesUserFacingLanguage() {
         val subject = chart()
 

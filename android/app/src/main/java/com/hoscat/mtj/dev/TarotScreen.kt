@@ -10,13 +10,13 @@ import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -31,6 +31,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalViewConfiguration
+import androidx.compose.ui.platform.ViewConfiguration
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
@@ -39,6 +41,10 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
@@ -46,11 +52,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.mtj.design.MtjBottomActionScaffold
 import com.mtj.design.MtjQuietPanel
 import com.mtj.design.MtjSectionHeader
+import com.mtj.design.MtjTokens
 import com.mtj.tarot.*
 import com.softcat.mystictarot.*
 import kotlinx.coroutines.Dispatchers
@@ -90,6 +98,7 @@ internal fun TarotScreen(
     val saveRecord = restored?.record
     var saveMessage by remember(result) { mutableStateOf<String?>(null) }
     var saving by remember { mutableStateOf(false) }
+    val resultListState = key(result) { rememberLazyListState() }
     val scope = rememberCoroutineScope()
     val normalSpreadOptions = remember {
         selectableSpreadOptions.filter { it.drawMode == SpreadDrawMode.Normal }
@@ -121,18 +130,38 @@ internal fun TarotScreen(
         if (restorationFailed) {
             OutlinedButton({ restart() }, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("새로 시작") }
         } else if (result != null) {
-            OutlinedButton({ restart() }, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("새로 뽑기") }
-            Spacer(Modifier.height(8.dp))
-            Button({
-                val record = saveRecord ?: return@Button
-                saving = true
-                scope.launch {
-                    try { store.insert(listOf(record)); saveMessage = "기록에 저장했습니다." }
-                    catch (e: kotlinx.coroutines.CancellationException) { throw e }
-                    catch (_: Exception) { saveMessage = "저장하지 못했습니다. 다시 시도해주세요." }
-                    finally { saving = false }
+            BoxWithConstraints(Modifier.fillMaxWidth()) {
+                val stackActions = maxWidth < 320.dp || LocalDensity.current.fontScale >= 1.3f
+                FlowRow(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    maxItemsInEachRow = if (stackActions) 1 else 2,
+                ) {
+                    Button({
+                        if (saving) return@Button
+                        val record = saveRecord ?: return@Button
+                        saving = true
+                        scope.launch {
+                            try { store.insert(listOf(record)); saveMessage = "기록에 저장했습니다." }
+                            catch (e: kotlinx.coroutines.CancellationException) { throw e }
+                            catch (_: Exception) { saveMessage = "저장하지 못했습니다. 다시 시도해주세요." }
+                            finally { saving = false }
+                        }
+                    }, enabled = !saving, modifier = (if (stackActions) Modifier.fillMaxWidth() else Modifier.weight(1f))
+                        .heightIn(min = 48.dp)) {
+                        Text(if (saving) "저장 중" else "저장")
+                    }
+                    OutlinedButton(
+                        onClick = { restart() },
+                        modifier = (if (stackActions) Modifier.fillMaxWidth() else Modifier).heightIn(min = 48.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                    ) { Text("새로 뽑기") }
                 }
-            }, enabled = !saving, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text(if (saving) "저장 중" else "저장") }
+            }
+            TextButton({
+                scope.launch { resultListState.animateScrollToItem(if (saveMessage == null) 2 else 3) }
+            }, Modifier.align(Alignment.CenterHorizontally).heightIn(min = 36.dp)) { Text("카드별 설명") }
         }
     }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -144,22 +173,11 @@ internal fun TarotScreen(
                     val snapshot = checkNotNull(result)
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth().weight(1f),
+                        state = resultListState,
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         item {
-                            MtjQuietPanel {
-                                Text(
-                                    "${snapshot.spread.cardCount}장 | ${snapshot.spread.title}",
-                                    style = MaterialTheme.typography.titleLarge,
-                                )
-                                Text(
-                                    snapshot.spread.subtitle,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                                Text("질문", style = MaterialTheme.typography.labelLarge)
-                                Text(snapshot.reading.question)
-                            }
+                            TarotResultSummaryPanel(snapshot.resultSummary())
                         }
                         saveMessage?.let { message -> item { Text(message) } }
                         item {
@@ -217,15 +235,21 @@ internal fun TarotScreen(
                                     color = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.semantics {
                                         contentDescription = "${selected.size}장 선택됨, ${currentSpread.cardCount}장 필요"
+                                        liveRegion = LiveRegionMode.Polite
                                     },
                                 )
-                                IconButton(
+                                Surface(
                                     onClick = {
-                                    session = session.reshufflePreservingSelection(checkNotNull(deck))
+                                        session = session.reshufflePreservingSelection(checkNotNull(deck))
                                     },
-                                    modifier = Modifier.size(48.dp),
+                                    modifier = Modifier.size(48.dp).semantics { role = Role.Button },
+                                    shape = RoundedCornerShape(4.dp),
+                                    color = MaterialTheme.colorScheme.surfaceContainer,
+                                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
                                 ) {
-                                    Icon(Icons.Default.Refresh, contentDescription = "다시 섞기")
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(painterResource(R.drawable.ic_shuffle), contentDescription = "다시 섞기")
+                                    }
                                 }
                             }
                         }
@@ -513,43 +537,61 @@ private fun TarotDeckCardChoice(
 ) {
     val selectedIndex = selectedIds.indexOf(card.id)
     val canSelect = selectedIndex >= 0 || selectedIds.size < requiredCount
-    Surface(
-        onClick = { if (canSelect) onCardTapped(card) },
-        enabled = canSelect,
-        shape = RoundedCornerShape(5.dp),
-        color = Color.Transparent,
-        modifier = modifier.semantics {
-            role = Role.Button
-            contentDescription = "카드 ${position + 1}, " + if (selectedIndex >= 0) {
-                "${selectedIndex + 1}번째 선택"
-            } else if (!canSelect) {
-                "필요한 장수 선택 완료"
-            } else {
-                "선택 안 됨"
-            }
-        },
-    ) {
-        BoxWithConstraints(Modifier.fillMaxSize().padding(1.dp), contentAlignment = Alignment.Center) {
-            val cardWidth = minOf(maxWidth, maxHeight * TAROT_CARD_ASPECT_RATIO)
-            val cardHeight = cardWidth / TAROT_CARD_ASPECT_RATIO
-            Box(
-                Modifier
-                    .size(cardWidth, cardHeight)
-                    .clip(RoundedCornerShape(3.dp))
-                    .border(
-                        if (selectedIndex >= 0) 2.dp else 1.dp,
-                        if (selectedIndex >= 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
-                        RoundedCornerShape(3.dp),
-                    ),
-                contentAlignment = Alignment.Center,
-            ) {
-                TarotCardBack(Modifier.fillMaxSize())
-                if (selectedIndex >= 0) {
-                    Text(
-                        "${selectedIndex + 1}",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
+    val viewConfiguration = LocalViewConfiguration.current
+    val boundedTargets = remember(viewConfiguration) {
+        object : ViewConfiguration by viewConfiguration {
+            override val minimumTouchTargetSize = DpSize.Zero
+        }
+    }
+    // Use the entire rectangular cell; automatic 48dp expansion would overlap its neighbors.
+    CompositionLocalProvider(LocalViewConfiguration provides boundedTargets) {
+        Box(
+            modifier = modifier
+                .clickable(
+                    enabled = canSelect,
+                    role = Role.Button,
+                    onClickLabel = if (selectedIndex >= 0) "선택 취소" else "카드 선택",
+                    onClick = { onCardTapped(card) },
+                )
+                .semantics(mergeDescendants = true) {
+                    selected = selectedIndex >= 0
+                    contentDescription = "카드 ${position + 1}"
+                    stateDescription = if (selectedIndex >= 0) {
+                        "${selectedIndex + 1}번째 선택"
+                    } else if (!canSelect) {
+                        "필요한 장수 선택 완료"
+                    } else {
+                        "선택 안 됨"
+                    }
+                },
+        ) {
+            BoxWithConstraints(Modifier.fillMaxSize().padding(1.dp), contentAlignment = Alignment.Center) {
+                val cardWidth = minOf(maxWidth, maxHeight * TAROT_CARD_ASPECT_RATIO)
+                val cardHeight = cardWidth / TAROT_CARD_ASPECT_RATIO
+                Box(
+                    Modifier
+                        .size(cardWidth, cardHeight)
+                        .clip(RoundedCornerShape(3.dp))
+                        .border(
+                            if (selectedIndex >= 0) 2.dp else 1.dp,
+                            if (selectedIndex >= 0) MtjTokens.Primary else MaterialTheme.colorScheme.outlineVariant,
+                            RoundedCornerShape(3.dp),
+                        ),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    TarotCardBack(Modifier.fillMaxSize())
+                    if (selectedIndex >= 0) {
+                        Text(
+                            "${selectedIndex + 1}",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MtjTokens.Surface,
+                            maxLines = 1,
+                            modifier = Modifier
+                                .background(MtjTokens.Primary, RoundedCornerShape(2.dp))
+                                .padding(horizontal = 2.dp)
+                                .clearAndSetSemantics { },
+                        )
+                    }
                 }
             }
         }
@@ -623,7 +665,8 @@ private fun TarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modifier 
             availableWidth = availableWidthPx,
             cardCount = snapshot.spread.cardCount,
             firstCardWidth = initialGeometry?.cardWidth ?: 0f,
-            singleCardMaximumWidth = with(density) { 180.dp.toPx() },
+            singleCardMaximumWidth = with(density) { 112.dp.toPx() },
+            compactSpreadMaximumWidth = with(density) { 420.dp.toPx() },
         )
         val firstPass = remember(snapshot.spread, geometryWidthPx, gaps, initialFirstPass) {
             if (geometryWidthPx < availableWidthPx && initialGeometry != null) {

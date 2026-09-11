@@ -179,14 +179,22 @@ internal fun effectiveTarotSpreadGeometryWidth(
     cardCount: Int,
     firstCardWidth: Float,
     singleCardMaximumWidth: Float,
+    compactSpreadMaximumWidth: Float = availableWidth,
 ): Float {
     if (
-        cardCount != 1 ||
         !availableWidth.isFinite() || availableWidth <= 0f ||
-        !firstCardWidth.isFinite() || firstCardWidth <= singleCardMaximumWidth ||
-        !singleCardMaximumWidth.isFinite() || singleCardMaximumWidth <= 0f
+        cardCount <= 0 ||
+        !firstCardWidth.isFinite() ||
+        !singleCardMaximumWidth.isFinite() || singleCardMaximumWidth <= 0f ||
+        !compactSpreadMaximumWidth.isFinite() || compactSpreadMaximumWidth <= 0f
     ) {
         return availableWidth
     }
-    return min(availableWidth, singleCardMaximumWidth)
+    return when {
+        cardCount == 1 && firstCardWidth > singleCardMaximumWidth ->
+            min(availableWidth, singleCardMaximumWidth)
+        cardCount in 2..3 ->
+            min(availableWidth, compactSpreadMaximumWidth)
+        else -> availableWidth
+    }
 }
