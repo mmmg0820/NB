@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.hoscat.mtj.dev.TarotSelectionGridContractTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-09-11T00:15:20" hostname="ThomasucBookPro" time="0.001">
+  <properties/>
+  <testcase name="cancellingReindexesRemainingSelectionsAndClosesCompletion" classname="com.hoscat.mtj.dev.TarotSelectionGridContractTest" time="0.0"/>
+  <testcase name="firstTapSelectsAndSecondTapCancels" classname="com.hoscat.mtj.dev.TarotSelectionGridContractTest" time="0.0"/>
+  <testcase name="all78CardsUseEightColumnsAndTenRows" classname="com.hoscat.mtj.dev.TarotSelectionGridContractTest" time="0.001"/>
+  <testcase name="limitAndUnknownIdsAreIgnored" classname="com.hoscat.mtj.dev.TarotSelectionGridContractTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

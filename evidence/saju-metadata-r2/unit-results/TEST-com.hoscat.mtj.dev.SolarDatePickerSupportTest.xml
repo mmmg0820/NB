@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.hoscat.mtj.dev.SolarDatePickerSupportTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-11T00:15:19" hostname="ThomasucBookPro" time="0.002">
+  <properties/>
+  <testcase name="utcConversionRoundTripsLeapDayOutsideUtcDefaultTimezone" classname="com.hoscat.mtj.dev.SolarDatePickerSupportTest" time="0.001"/>
+  <testcase name="utcConversionRoundTripsPreEpochDate" classname="com.hoscat.mtj.dev.SolarDatePickerSupportTest" time="0.0"/>
+  <testcase name="typedPickerSeedPreservesValidHistoricalMonth" classname="com.hoscat.mtj.dev.SolarDatePickerSupportTest" time="0.0"/>
+  <testcase name="invalidTypedAndUnsupportedDatesAreRejected" classname="com.hoscat.mtj.dev.SolarDatePickerSupportTest" time="0.0"/>
+  <testcase name="typedPickerSeedRejectsOutOfRangeFutureAndHugeYears" classname="com.hoscat.mtj.dev.SolarDatePickerSupportTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

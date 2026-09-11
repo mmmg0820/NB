@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.softcat.mystictarot.SpreadGeometryTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-09-11T00:15:20" hostname="ThomasucBookPro" time="0.04">
+  <properties/>
+  <testcase name="longMeasuredLabelsGrowCanvasWithoutIntersectingOrTruncatingBounds" classname="com.softcat.mystictarot.SpreadGeometryTest" time="0.0"/>
+  <testcase name="miniAndFullCelticKeepOnlyTheIntentionalRotatedCoincidentPair" classname="com.softcat.mystictarot.SpreadGeometryTest" time="0.001"/>
+  <testcase name="malformedDefinitionAndImpossibleWidthReturnExplicitUnsupportedStatuses" classname="com.softcat.mystictarot.SpreadGeometryTest" time="0.0"/>
+  <testcase name="everyNormalSpreadIsSafeAtPhoneAndTabletWidths" classname="com.softcat.mystictarot.SpreadGeometryTest" time="0.021"/>
+  <testcase name="cardWidthAndHorizontalSilhouetteAreInvariantAcrossTwoPassMeasurement" classname="com.softcat.mystictarot.SpreadGeometryTest" time="0.016"/>
+  <testcase name="invalidParametersFailClosed" classname="com.softcat.mystictarot.SpreadGeometryTest" time="0.001"/>
+  <testcase name="miniAndFullCelticReserveVariedLabelBandsAndKeepLabelsAttached" classname="com.softcat.mystictarot.SpreadGeometryTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

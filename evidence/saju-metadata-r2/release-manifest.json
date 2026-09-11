@@ -1,0 +1,13 @@
+{
+  "revision": "saju-metadata-r2",
+  "status": "SOURCE_FREEZE",
+  "apk": "sharomyang-saju-metadata-r2-debug.apk",
+  "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+  "sourceSnapshotSha256": "1e0df154380a6517630395150c3b00f56380de99e6681b4b05c37b3f0f0e5683",
+  "sourceManifestSha256": "58d5599c7542034bf0d30faa98e3d729a5426423e4ba85ab1747ac3ea47f1c85",
+  "certificateSha256": "c0cdb6586cafab0ae49a721e27a7a9da5543bc672d474fd5303561c10550d3ab",
+  "unitTests": 94,
+  "failures": 0,
+  "errors": 0,
+  "previousApkSha256": "89d40ac05d74988c0d6e348b60199e91bd57b8e4800c3c6a81fc94d752ef2a7c"
+}

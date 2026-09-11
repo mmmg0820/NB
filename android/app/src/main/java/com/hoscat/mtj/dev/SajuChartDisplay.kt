@@ -10,10 +10,16 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -31,6 +37,10 @@ import com.hoscat.core.model.GanjiGlyphKind
 import com.hoscat.core.model.Pillar
 import com.hoscat.core.model.SajuChart
 import com.hoscat.core.model.toGanjiHanja
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 internal data class SajuPillarDisplay(
     val role: String,
@@ -82,12 +92,20 @@ internal fun sajuChartAuthorityLabel(chart: SajuChart): String = when {
 }
 
 internal fun sajuChartBasisLabel(chart: SajuChart): String =
-    listOfNotNull(
-        chart.evidence.calculationBasisLabel,
-        chart.evidence.previousSolarTermName?.let { "이전 절입 $it" },
-        chart.evidence.previousSolarTermAtKst?.let { "기준 시각 $it" },
-        "검증 상태 별도 표시",
-    ).joinToString(" · ")
+    chart.evidence.calculationBasisLabel
+
+internal fun sajuCalculationDetails(chart: SajuChart): String = listOfNotNull(
+    sajuChartBasisLabel(chart),
+    chart.evidence.previousSolarTermName?.let { "이전 절입: $it" },
+    chart.evidence.previousSolarTermAtKst?.let { raw ->
+        val formatted = runCatching {
+            OffsetDateTime.parse(raw).atZoneSameInstant(ZoneId.of("Asia/Seoul"))
+                .format(DateTimeFormatter.ofPattern("yyyy년 M월 d일 HH:mm:ss", Locale.KOREAN))
+        }.getOrNull()
+        formatted?.let { "절입 시각: $it (한국 표준시, UTC+09:00)" }
+            ?: "절입 시각을 표시할 수 없습니다."
+    },
+).joinToString("\n")
 
 private fun glyphLine(value: String?, kind: GanjiGlyphKind): String =
     value?.let { "${it.toGanjiHanja(kind)} $it" } ?: "모름"
@@ -116,6 +134,7 @@ private fun branchElementName(branch: String): String = when (branch) {
 @Composable
 internal fun SajuChartDisplay(chart: SajuChart, modifier: Modifier = Modifier) {
     val displays = sajuChartPillarDisplays(chart)
+    var showCalculationDetails by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier.fillMaxWidth().testTag("saju-chart-display"),
         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -163,6 +182,20 @@ internal fun SajuChartDisplay(chart: SajuChart, modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.testTag("saju-calculation-basis"),
+        )
+        TextButton(
+            onClick = { showCalculationDetails = true },
+            modifier = Modifier.heightIn(min = 48.dp).testTag("saju-calculation-details"),
+        ) { Text("계산 기준") }
+    }
+    if (showCalculationDetails) {
+        AlertDialog(
+            onDismissRequest = { showCalculationDetails = false },
+            title = { Text("계산 기준") },
+            text = { Text(sajuCalculationDetails(chart)) },
+            confirmButton = {
+                TextButton(onClick = { showCalculationDetails = false }) { Text("닫기") }
+            },
         )
     }
 }

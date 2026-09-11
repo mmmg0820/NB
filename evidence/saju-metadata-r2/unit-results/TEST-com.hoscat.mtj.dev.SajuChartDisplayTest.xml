@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.hoscat.mtj.dev.SajuChartDisplayTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-09-11T00:15:19" hostname="ThomasucBookPro" time="0.013">
+  <properties/>
+  <testcase name="calculationDetailsFormatTimestampWithoutChangingEvidence" classname="com.hoscat.mtj.dev.SajuChartDisplayTest" time="0.009"/>
+  <testcase name="unknownHourIsExplicitAndExcludedFromElementCalculation" classname="com.hoscat.mtj.dev.SajuChartDisplayTest" time="0.001"/>
+  <testcase name="glyphsIncludeHanjaHangulAndFiveElementText" classname="com.hoscat.mtj.dev.SajuChartDisplayTest" time="0.001"/>
+  <testcase name="generatedUnverifiedAuthorityUsesUserFacingLanguage" classname="com.hoscat.mtj.dev.SajuChartDisplayTest" time="0.0"/>
+  <testcase name="pillarGridUsesCompactModeForNarrowOrLargeText" classname="com.hoscat.mtj.dev.SajuChartDisplayTest" time="0.001"/>
+  <testcase name="verifiedAuthorityLabelsSeparateExternalAndInternalStates" classname="com.hoscat.mtj.dev.SajuChartDisplayTest" time="0.0"/>
+  <testcase name="pillarGridNeverUsesThreePlusOneLayout" classname="com.hoscat.mtj.dev.SajuChartDisplayTest" time="0.0"/>
+  <testcase name="dayStemIsTheOnlyDayMasterTile" classname="com.hoscat.mtj.dev.SajuChartDisplayTest" time="0.0"/>
+  <testcase name="chartOrderMatchesYearMonthDayHourContract" classname="com.hoscat.mtj.dev.SajuChartDisplayTest" time="0.0"/>
+  <testcase name="invalidCalculationTimestampNeverLeaksRawValue" classname="com.hoscat.mtj.dev.SajuChartDisplayTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

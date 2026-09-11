@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.hoscat.mtj.dev.TarotSpreadCategoryContractTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-09-11T00:15:20" hostname="ThomasucBookPro" time="0.001">
+  <properties/>
+  <testcase name="eightCategoriesCoverAll27NormalReadingKeysExactlyOnce" classname="com.hoscat.mtj.dev.TarotSpreadCategoryContractTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,461 @@
+{
+  "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+  "unitTests": {
+    "tests": 94,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "captures": [
+    {
+      "xml": "saju-calculation-details-dark.xml",
+      "xmlSha256": "efba3b5f72240d0c2fe42253dfa4a79909905b624db2ac91a92a68aa16c98374",
+      "png": "saju-calculation-details-dark.png",
+      "pngSha256": "19a9dd94de76980ab5579771664b5416fc4e9bfee9087269c0da1f960d9e4626",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "계산 기준",
+        "대한민국 표준시\n이전 절입: 소한\n절입 시각: 1995년 1월 6일 04:34:04 (한국 표준시, UTC+09:00)",
+        "닫기"
+      ]
+    },
+    {
+      "xml": "saju-calculation-details-light.xml",
+      "xmlSha256": "efba3b5f72240d0c2fe42253dfa4a79909905b624db2ac91a92a68aa16c98374",
+      "png": "saju-calculation-details-light.png",
+      "pngSha256": "0e0a29a2f7069b13c5547ccd66f6bc767b1b2ceec26c51740c06a1dcc3854b9a",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "계산 기준",
+        "대한민국 표준시\n이전 절입: 소한\n절입 시각: 1995년 1월 6일 04:34:04 (한국 표준시, UTC+09:00)",
+        "닫기"
+      ]
+    },
+    {
+      "xml": "saju-known-dark.xml",
+      "xmlSha256": "87e71ba57ea01ce36531713eea3124cf23656ff1af894441eea78737286e6dec",
+      "png": "saju-known-dark.png",
+      "pngSha256": "a30c1b169111849c0ed63952bbf34c9060df45af9a40668cac8ccf2e134e5b9d",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "명식",
+        "QA님",
+        "검토 필요",
+        "일간",
+        "丁 정",
+        "화 일간",
+        "연주",
+        "甲",
+        "갑",
+        "戌",
+        "술",
+        "월주",
+        "丁",
+        "정",
+        "丑",
+        "축",
+        "일주",
+        "丁",
+        "정",
+        "酉",
+        "유",
+        "천간 화 · 지지 금",
+        "시주",
+        "戊",
+        "무",
+        "申",
+        "신",
+        "대한민국 표준시",
+        "계산 기준",
+        "정보 수정",
+        "명식 저장",
+        "홈",
+        "사주",
+        "타로",
+        "기록",
+        "설정"
+      ]
+    },
+    {
+      "xml": "saju-known-input-dark.xml",
+      "xmlSha256": "d58a04e88f82b12baf483d0b3e7532608a1928a80058a383e7157121757fbf9b",
+      "png": "saju-known-input-dark.png",
+      "pngSha256": "e6978892300430ca86c865ed16f7882792979e08ba1950d12fe48e55ba788322",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "명식 기준",
+        "기본 정보",
+        "QA",
+        "별칭",
+        "실명 대신 편한 별칭을 사용해도 됩니다.",
+        "19950106",
+        "생년월일",
+        "YYYYMMDD · 예: 19900123",
+        "양력",
+        "음력",
+        "양력 날짜 선택",
+        "해석 옵션",
+        "시간과 성별",
+        "1636",
+        "태어난 시간",
+        "HHmm · 예: 0930",
+        "시간 모름",
+        "여성",
+        "남성",
+        "미상",
+        "내 명식 보기",
+        "홈",
+        "사주",
+        "타로",
+        "기록",
+        "설정"
+      ]
+    },
+    {
+      "xml": "saju-known-input-light.xml",
+      "xmlSha256": "d58a04e88f82b12baf483d0b3e7532608a1928a80058a383e7157121757fbf9b",
+      "png": "saju-known-input-light.png",
+      "pngSha256": "5bb1c4041400ddc1a6b830e36c0252841c40d952c212d79ed8d0723c499252f2",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "명식 기준",
+        "기본 정보",
+        "QA",
+        "별칭",
+        "실명 대신 편한 별칭을 사용해도 됩니다.",
+        "19950106",
+        "생년월일",
+        "YYYYMMDD · 예: 19900123",
+        "양력",
+        "음력",
+        "양력 날짜 선택",
+        "해석 옵션",
+        "시간과 성별",
+        "1636",
+        "태어난 시간",
+        "HHmm · 예: 0930",
+        "시간 모름",
+        "여성",
+        "남성",
+        "미상",
+        "내 명식 보기",
+        "홈",
+        "사주",
+        "타로",
+        "기록",
+        "설정"
+      ]
+    },
+    {
+      "xml": "saju-known-light.xml",
+      "xmlSha256": "87e71ba57ea01ce36531713eea3124cf23656ff1af894441eea78737286e6dec",
+      "png": "saju-known-light.png",
+      "pngSha256": "cf3c76db16323c7cabb5c51ee53091544620ef5834a15b084d451d138a677abd",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "명식",
+        "QA님",
+        "검토 필요",
+        "일간",
+        "丁 정",
+        "화 일간",
+        "연주",
+        "甲",
+        "갑",
+        "戌",
+        "술",
+        "월주",
+        "丁",
+        "정",
+        "丑",
+        "축",
+        "일주",
+        "丁",
+        "정",
+        "酉",
+        "유",
+        "천간 화 · 지지 금",
+        "시주",
+        "戊",
+        "무",
+        "申",
+        "신",
+        "대한민국 표준시",
+        "계산 기준",
+        "정보 수정",
+        "명식 저장",
+        "홈",
+        "사주",
+        "타로",
+        "기록",
+        "설정"
+      ]
+    },
+    {
+      "xml": "saju-unknown-dark.xml",
+      "xmlSha256": "ed4ed92020b6eb430a718681c9889dc9c80f281e15deaa804d7756212e5d7b75",
+      "png": "saju-unknown-dark.png",
+      "pngSha256": "0d047cff7b023ec678cd48b0e9869af12a3f7f1d4e98f5c59233cda5e7d1f725",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "명식",
+        "QA님",
+        "검토 필요",
+        "일간",
+        "丁 정",
+        "화 일간",
+        "연주",
+        "甲",
+        "갑",
+        "戌",
+        "술",
+        "월주",
+        "丁",
+        "정",
+        "丑",
+        "축",
+        "일주",
+        "丁",
+        "정",
+        "酉",
+        "유",
+        "천간 화 · 지지 금",
+        "시주",
+        "시간 모름",
+        "오행 산출 제외",
+        "대한민국 표준시",
+        "계산 기준",
+        "정보 수정",
+        "명식 저장",
+        "홈",
+        "사주",
+        "타로",
+        "기록",
+        "설정"
+      ]
+    },
+    {
+      "xml": "saju-unknown-light.xml",
+      "xmlSha256": "ed4ed92020b6eb430a718681c9889dc9c80f281e15deaa804d7756212e5d7b75",
+      "png": "saju-unknown-light.png",
+      "pngSha256": "5118e9f7a23a6f075938872f8abd06e56881e2339b7747f06f783b2a91bf047c",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "명식",
+        "QA님",
+        "검토 필요",
+        "일간",
+        "丁 정",
+        "화 일간",
+        "연주",
+        "甲",
+        "갑",
+        "戌",
+        "술",
+        "월주",
+        "丁",
+        "정",
+        "丑",
+        "축",
+        "일주",
+        "丁",
+        "정",
+        "酉",
+        "유",
+        "천간 화 · 지지 금",
+        "시주",
+        "시간 모름",
+        "오행 산출 제외",
+        "대한민국 표준시",
+        "계산 기준",
+        "정보 수정",
+        "명식 저장",
+        "홈",
+        "사주",
+        "타로",
+        "기록",
+        "설정"
+      ]
+    },
+    {
+      "xml": "tarot-0of3.xml",
+      "xmlSha256": "d2b2d4c3d512834795624fef827a5f85c0e762863f662ab9fbce9484f257fc1b",
+      "png": "tarot-0of3.png",
+      "pngSha256": "c869172c80b75d2a68fa12e0b54b2c93aa86e53a8e4f6d35153b3c5673c9a13d",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "카드 고르기",
+        "0 / 3"
+      ]
+    },
+    {
+      "xml": "tarot-2of3.xml",
+      "xmlSha256": "20eca3a87d235e0c8f4bc06fff087234d1c43c15522a5a9fa13d03dec86f617b",
+      "png": "tarot-2of3.png",
+      "pngSha256": "18f81db221a6b65e5a8b3df0eecd3c03e4a31123198e736048ce506953aee84e",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "카드 고르기",
+        "2 / 3",
+        "1",
+        "2"
+      ]
+    },
+    {
+      "xml": "tarot-3of3.xml",
+      "xmlSha256": "1c29c9525d7f282df728ff7202d1590ce915cfb62026862c22be1292222efc20",
+      "png": "tarot-3of3.png",
+      "pngSha256": "96cc7d6ecd9bd9dcec4640e09b11ebf69ecfdd835d564769cf00182f20838080",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "카드 고르기",
+        "3 / 3",
+        "1",
+        "2",
+        "3",
+        "결과 서랍"
+      ]
+    },
+    {
+      "xml": "tarot-retap-2of3.xml",
+      "xmlSha256": "20eca3a87d235e0c8f4bc06fff087234d1c43c15522a5a9fa13d03dec86f617b",
+      "png": "tarot-retap-2of3.png",
+      "pngSha256": "0fdaac0d11f19a7c59c78b32e8502f93503e6bdee10cc835ab01ce052d45c770",
+      "apkSha256": "78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2",
+      "hierarchyPackages": [
+        "com.hoscat.mtj.dev"
+      ],
+      "configurationEvidence": "runtime-metadata.txt",
+      "configurationScope": "Shared device configuration; no size/density/font changes during this run. Theme varies by capture name.",
+      "text": [
+        "카드 고르기",
+        "2 / 3",
+        "1",
+        "2"
+      ]
+    }
+  ],
+  "retapTrace": {
+    "tarot-0of3": [
+      {
+        "description": "카드 1, 선택 안 됨",
+        "bounds": "[54,289][175,475]"
+      },
+      {
+        "description": "카드 2, 선택 안 됨",
+        "bounds": "[175,289][296,475]"
+      },
+      {
+        "description": "카드 3, 선택 안 됨",
+        "bounds": "[296,289][417,475]"
+      }
+    ],
+    "tarot-2of3": [
+      {
+        "description": "카드 1, 1번째 선택",
+        "bounds": "[59,289][175,475]"
+      },
+      {
+        "description": "카드 2, 2번째 선택",
+        "bounds": "[180,289][296,475]"
+      },
+      {
+        "description": "카드 3, 선택 안 됨",
+        "bounds": "[296,289][417,475]"
+      }
+    ],
+    "tarot-3of3": [
+      {
+        "description": "카드 1, 1번째 선택",
+        "bounds": "[59,289][175,475]"
+      },
+      {
+        "description": "카드 2, 2번째 선택",
+        "bounds": "[180,289][296,475]"
+      },
+      {
+        "description": "카드 3, 3번째 선택",
+        "bounds": "[301,289][417,475]"
+      }
+    ],
+    "tarot-retap-2of3": [
+      {
+        "description": "카드 1, 1번째 선택",
+        "bounds": "[59,289][175,475]"
+      },
+      {
+        "description": "카드 2, 2번째 선택",
+        "bounds": "[180,289][296,475]"
+      },
+      {
+        "description": "카드 3, 선택 안 됨",
+        "bounds": "[296,289][417,475]"
+      }
+    ]
+  },
+  "retapIdentity": "Same third grid position, no reshuffle or navigation between selection and retap; card-ID reducer behavior covered by JVM tests. Selected-state semantics use inset child bounds, while the same tap coordinate lies inside both states.",
+  "retapCoordinate": [
+    356,
+    382
+  ],
+  "systemLog": {
+    "file": "android-test-window.log",
+    "sha256": "074059d04bd242ddfbd4b02cf2474f0868022d5a375816d5013e248f6f66d07c",
+    "filter": "none; logcat -b all -d -v threadtime"
+  }
+}

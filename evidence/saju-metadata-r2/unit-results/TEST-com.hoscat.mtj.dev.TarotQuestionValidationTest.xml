@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.hoscat.mtj.dev.TarotQuestionValidationTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-09-11T00:15:19" hostname="ThomasucBookPro" time="0.002">
+  <properties/>
+  <testcase name="koreanTextCountsByCodePoint" classname="com.hoscat.mtj.dev.TarotQuestionValidationTest" time="0.0"/>
+  <testcase name="questionAt240CodePointsCanStart" classname="com.hoscat.mtj.dev.TarotQuestionValidationTest" time="0.0"/>
+  <testcase name="whitespaceOnlyQuestionCannotStart" classname="com.hoscat.mtj.dev.TarotQuestionValidationTest" time="0.0"/>
+  <testcase name="emptyQuestionCannotStart" classname="com.hoscat.mtj.dev.TarotQuestionValidationTest" time="0.0"/>
+  <testcase name="emojiUsesOneCodePointRatherThanTwoUtf16Units" classname="com.hoscat.mtj.dev.TarotQuestionValidationTest" time="0.001"/>
+  <testcase name="questionAt239CodePointsCanStart" classname="com.hoscat.mtj.dev.TarotQuestionValidationTest" time="0.0"/>
+  <testcase name="multilineTextCountsNewlinesAndCanStart" classname="com.hoscat.mtj.dev.TarotQuestionValidationTest" time="0.0"/>
+  <testcase name="questionAt241CodePointsCannotStart" classname="com.hoscat.mtj.dev.TarotQuestionValidationTest" time="0.0"/>
+  <testcase name="inputAcceptsUpTo4096CodePointsAndRejectsLargerReplacement" classname="com.hoscat.mtj.dev.TarotQuestionValidationTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

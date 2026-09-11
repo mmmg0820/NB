@@ -1,0 +1,8 @@
+Pixel_10
+OK
+37
+Physical size: 1080x2424
+Physical density: 420
+1.0
+  mCurrentFocus=Window{2c5368d u0 com.hoscat.mtj.dev/com.hoscat.mtj.dev.MainActivity}
+78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2  /data/app/~~j6jILIHjImUkqj2yikhZ7g==/com.hoscat.mtj.dev--BBwJVLLLboVqxY9WoNQ-g==/base.apk

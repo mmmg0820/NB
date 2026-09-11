@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.hoscat.mtj.dev.RecordDetailRowsTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-09-11T00:15:19" hostname="ThomasucBookPro" time="0.003">
+  <properties/>
+  <testcase name="tarotRowsExposeSavedSpreadAndCardOrder" classname="com.hoscat.mtj.dev.RecordDetailRowsTest" time="0.002"/>
+  <testcase name="sajuRowsExposeSavedSnapshotIdentity" classname="com.hoscat.mtj.dev.RecordDetailRowsTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

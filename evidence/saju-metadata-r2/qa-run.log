@@ -1,0 +1,15 @@
+saju-unknown-light: PASS
+saju-known-light: PASS
+ERROR: null root node returned by UiTestAutomationBridge.
+ERROR: null root node returned by UiTestAutomationBridge.
+Traceback (most recent call last):
+  File "/Users/thomaslee/Documents/Codex/2026-09-09/mtj-android-development/outputs/evidence/sharomyang-saju-metadata-r2-20260911/qa_pixel10.py", line 110, in <module>
+    run()
+    ~~~^^
+  File "/Users/thomaslee/Documents/Codex/2026-09-09/mtj-android-development/outputs/evidence/sharomyang-saju-metadata-r2-20260911/qa_pixel10.py", line 70, in run
+    enter('별칭', 'QA')
+    ~~~~~^^^^^^^^^^^^^^
+  File "/Users/thomaslee/Documents/Codex/2026-09-09/mtj-android-development/outputs/evidence/sharomyang-saju-metadata-r2-20260911/qa_pixel10.py", line 35, in enter
+    field = next(n for n in nodes if n.get('class') == 'android.widget.EditText'
+                 and any(c.get('text') == label for c in n.iter('node')))
+StopIteration

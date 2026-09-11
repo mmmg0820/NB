@@ -1,0 +1,11 @@
+{
+  "status": "PASS",
+  "serial": "emulator-5556",
+  "saju": [
+    "unknown-light",
+    "known-light",
+    "unknown-dark",
+    "known-dark"
+  ],
+  "tarot": "0/3,2/3,3/3,retap2/3"
+}

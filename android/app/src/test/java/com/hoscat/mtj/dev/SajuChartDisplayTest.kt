@@ -65,8 +65,10 @@ class SajuChartDisplayTest {
         val subject = chart()
 
         assertEquals("검토 필요", sajuChartAuthorityLabel(subject))
-        assertTrue(sajuChartBasisLabel(subject).contains("대한민국 표준시"))
-        assertTrue(sajuChartBasisLabel(subject).contains("검증 상태 별도 표시"))
+        assertEquals("대한민국 표준시", sajuChartBasisLabel(subject))
+        assertFalse(sajuChartBasisLabel(subject).contains("1995-01-06T04:34:04+09:00"))
+        assertFalse(sajuChartBasisLabel(subject).contains("검증 상태 별도 표시"))
+        assertFalse(sajuChartBasisLabel(subject).contains("이전 절입"))
         assertFalse(sajuChartBasisLabel(subject).contains("myeongri_kr_v2"))
         assertFalse(sajuChartBasisLabel(subject).contains("manse-seed-2026-09-09"))
     }
@@ -83,6 +85,22 @@ class SajuChartDisplayTest {
             "내부 구조 검토됨",
             sajuChartAuthorityLabel(chart(trustLevel = DataTrustLevel.InternalStructureChecked)),
         )
+    }
+
+    @Test fun calculationDetailsFormatTimestampWithoutChangingEvidence() {
+        val subject = chart()
+        val details = sajuCalculationDetails(subject)
+        assertTrue(details.contains("이전 절입: 소한"))
+        assertTrue(details.contains("1995년 1월 6일 04:34:04 (한국 표준시, UTC+09:00)"))
+        assertFalse(details.contains("1995-01-06T"))
+        assertEquals("1995-01-06T04:34:04+09:00", subject.evidence.previousSolarTermAtKst)
+        assertEquals("검토 필요", sajuChartAuthorityLabel(subject))
+    }
+
+    @Test fun invalidCalculationTimestampNeverLeaksRawValue() {
+        val subject = chart().let { it.copy(evidence = it.evidence.copy(previousSolarTermAtKst = "invalid-internal-value")) }
+        assertFalse(sajuCalculationDetails(subject).contains("invalid-internal-value"))
+        assertTrue(sajuCalculationDetails(subject).contains("절입 시각을 표시할 수 없습니다."))
     }
 
     private fun chart(
@@ -108,6 +126,8 @@ class SajuChartDisplayTest {
             note = "Generated authority fixture is not externally reviewed.",
             trustLevel = trustLevel,
             calculationBasisLabel = "대한민국 표준시",
+            previousSolarTermName = "소한",
+            previousSolarTermAtKst = "1995-01-06T04:34:04+09:00",
         ),
         analysis = null,
     )

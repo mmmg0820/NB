@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.hoscat.mtj.dev.BirthTimeValidationTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-09-11T00:15:19" hostname="ThomasucBookPro" time="0.032">
+  <properties/>
+  <testcase name="compactUnknownTimeBypassesRetainedText" classname="com.hoscat.mtj.dev.BirthTimeValidationTest" time="0.001"/>
+  <testcase name="partialPairMarksAndFocusesTheMissingField" classname="com.hoscat.mtj.dev.BirthTimeValidationTest" time="0.0"/>
+  <testcase name="unknownBypassesRetainedKnownTimeDraft" classname="com.hoscat.mtj.dev.BirthTimeValidationTest" time="0.001"/>
+  <testcase name="compactTimeRejectsBadShapeAndRangeInUserLanguage" classname="com.hoscat.mtj.dev.BirthTimeValidationTest" time="0.0"/>
+  <testcase name="uiValidationMatchesCanonicalParser" classname="com.hoscat.mtj.dev.BirthTimeValidationTest" time="0.029"/>
+  <testcase name="bothBlankKeepsCanonicalUnknownTimePolicy" classname="com.hoscat.mtj.dev.BirthTimeValidationTest" time="0.0"/>
+  <testcase name="compactTimeErrorsUseUserFacingDisplayCopy" classname="com.hoscat.mtj.dev.BirthTimeValidationTest" time="0.0"/>
+  <testcase name="compactTimeParsesHhmmIntoDraftHourMinute" classname="com.hoscat.mtj.dev.BirthTimeValidationTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

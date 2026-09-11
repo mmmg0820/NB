@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.hoscat.mtj.dev.BirthDateValidationTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-09-11T00:15:19" hostname="ThomasucBookPro" time="0.015">
+  <properties/>
+  <testcase name="compactDateRejectsNonEightDigitInput" classname="com.hoscat.mtj.dev.BirthDateValidationTest" time="0.012"/>
+  <testcase name="compactLunarDateUsesLunarDayRangeWithoutSolarMonthShape" classname="com.hoscat.mtj.dev.BirthDateValidationTest" time="0.0"/>
+  <testcase name="compactSolarDateRejectsImpossibleAndFutureDates" classname="com.hoscat.mtj.dev.BirthDateValidationTest" time="0.002"/>
+  <testcase name="compactDateErrorsUseUserFacingDisplayCopy" classname="com.hoscat.mtj.dev.BirthDateValidationTest" time="0.0"/>
+  <testcase name="compactSolarDateParsesYyyyMmDd" classname="com.hoscat.mtj.dev.BirthDateValidationTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/thomaslee/Documents/Codex/2026-09-09/mtj-android-development/outputs/evidence/sharomyang-saju-metadata-r2-20260911/qa_pixel10.py", line 117, in <module>
+    run()
+    ~~~^^
+  File "/Users/thomaslee/Documents/Codex/2026-09-09/mtj-android-development/outputs/evidence/sharomyang-saju-metadata-r2-20260911/qa_pixel10.py", line 81, in run
+    verify_chart('saju-unknown-' + mode, True)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/thomaslee/Documents/Codex/2026-09-09/mtj-android-development/outputs/evidence/sharomyang-saju-metadata-r2-20260911/qa_pixel10.py", line 56, in verify_chart
+    assert '명식' in labels and '검토 필요' in labels, labels
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: ['', '', '', '', '', '', '', '', '샤로먕', '나의 사주', '', '명식 기준', '기본 정보', 'QA', '별칭', '실명 대신 편한 별칭을 사용해도 됩니다.', '19950106', '생년월일', '', 'YYYYMMDD · 예: 19900123', '', '양력', '', '', '음력', '', '', '양력 날짜 선택', '', '', '해석 옵션', '시간과 성별', '', '태어난 시간', '시간 모름', '', '', '', '', '', '', '', '계산 중', '', '', '', '', '', '홈', '', '', '', '사주', '', '', '', '타로', '', '', '', '기록', '', '', '', '설정', '']
