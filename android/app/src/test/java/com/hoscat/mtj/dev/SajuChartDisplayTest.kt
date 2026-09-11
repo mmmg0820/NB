@@ -61,6 +61,16 @@ class SajuChartDisplayTest {
         assertEquals(SajuPillarGridMode.Compact, sajuPillarGridMode(411.dp, 1.5f))
     }
 
+    @Test fun unknownHourCellGetsAdaptiveWidthOnlyOnStandardGrid() {
+        val displays = sajuChartPillarDisplays(chart(hourPillar = null))
+        val year = displays.single { it.role == "연주" }
+        val hour = displays.single { it.role == "시주" }
+
+        assertEquals(1f, sajuPillarCellWeight(year, SajuPillarGridMode.Standard))
+        assertTrue(sajuPillarCellWeight(hour, SajuPillarGridMode.Standard) > 1f)
+        assertEquals(1f, sajuPillarCellWeight(hour, SajuPillarGridMode.Compact))
+    }
+
     @Test fun generatedUnverifiedAuthorityUsesUserFacingLanguage() {
         val subject = chart()
 
