@@ -27,7 +27,11 @@ internal object RecordSnapshots {
 
     fun tarot(result: MtjResultSnapshot): Envelope = Envelope(
         origin(), Kind.TAROT, Value.Obj(mapOf(
-            "title" to Value.Str(result.reading.question.ifBlank { result.reading.spreadTitle }),
+            "title" to Value.Str(
+                result.reading.question
+                    .takeUnless { it.isBlank() || it == TAROT_QUESTION_NOT_PROVIDED }
+                    ?: result.reading.spreadTitle,
+            ),
             "summary" to Value.Str(result.reading.cards.joinToString("\n\n") {
                 "${it.positionLabel}\n${it.nameKr} · ${it.directionLabel}\n${it.meaningSnapshot}"
             }),

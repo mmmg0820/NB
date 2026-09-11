@@ -264,15 +264,6 @@ private fun MtjTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                         softWrap = true,
                     )
                 }
-                if (selected) {
-                    Spacer(
-                        Modifier
-                            .align(Alignment.TopCenter)
-                            .fillMaxWidth(0.34f)
-                            .height(2.dp)
-                            .background(MaterialTheme.colorScheme.primary),
-                    )
-                }
             }
         }
     }

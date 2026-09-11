@@ -11,7 +11,6 @@ import androidx.compose.foundation.relocation.BringIntoViewRequester
 import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.toggleable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -24,8 +23,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.mtj.design.MtjColorTheme
 import com.mtj.design.MtjTheme
 import com.mtj.design.MtjThemeMode
 import com.mtj.design.MtjBottomActionScaffold
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             var themeMode by remember { mutableStateOf(readThemeMode(context)) }
+            var colorTheme by remember { mutableStateOf(readColorTheme(context)) }
             val darkTheme = when (themeMode) {
                 MtjThemeMode.System -> isSystemInDarkTheme()
                 MtjThemeMode.Light -> false
@@ -54,10 +56,12 @@ class MainActivity : ComponentActivity() {
                     WindowInsetsController.APPEARANCE_LIGHT_NAVIGATION_BARS
                 window.insetsController?.setSystemBarsAppearance(if (darkTheme) 0 else mask, mask)
             }
-            MtjTheme(themeMode) {
+            MtjTheme(themeMode, colorTheme) {
                 MtjApp(
                     themeMode = themeMode,
                     onThemeModeChanged = { themeMode = it },
+                    colorTheme = colorTheme,
+                    onColorThemeChanged = { colorTheme = it },
                 )
             }
         }
@@ -69,10 +73,13 @@ class MainActivity : ComponentActivity() {
 private fun MtjApp(
     themeMode: MtjThemeMode,
     onThemeModeChanged: (MtjThemeMode) -> Unit,
+    colorTheme: MtjColorTheme,
+    onColorThemeChanged: (MtjColorTheme) -> Unit,
 ) {
     var tab by rememberSaveable { mutableIntStateOf(0) }
     val tabStateHolder = rememberSaveableStateHolder()
     var tarotQuestion by rememberSaveable { mutableStateOf("") }
+    var pendingTarotSpreadKey by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedRecordId by rememberSaveable { mutableStateOf<String?>(null) }
     var name by rememberSaveable { mutableStateOf("") }
     var aliasError by rememberSaveable { mutableStateOf(false) }
@@ -150,8 +157,10 @@ private fun MtjApp(
             chart = chart,
             store = store,
             question = tarotQuestion,
-            onQuestionChange = { tarotQuestion = it },
-            onStartTarot = { tab = 2 },
+            onStartTarot = {
+                pendingTarotSpreadKey = "three_cards:past_present_future"
+                tab = 2
+            },
             onOpenRecord = { recordId ->
                 selectedRecordId = recordId
                 tab = 3
@@ -167,6 +176,8 @@ private fun MtjApp(
                 question = tarotQuestion,
                 onQuestionChange = { tarotQuestion = it },
                 onTabSelected = { tab = it },
+                pendingSpreadKey = pendingTarotSpreadKey,
+                onPendingSpreadKeyConsumed = { pendingTarotSpreadKey = null },
             )
         }
         return
@@ -182,6 +193,8 @@ private fun MtjApp(
         SettingsScreen(
             themeMode = themeMode,
             onThemeModeChanged = onThemeModeChanged,
+            colorTheme = colorTheme,
+            onColorThemeChanged = onColorThemeChanged,
             onTabSelected = { tab = it },
         )
         return
@@ -231,7 +244,6 @@ private fun MtjApp(
                     }
                 }
             }, enabled = !busy,
-            shape = RoundedCornerShape(8.dp),
             modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
         ) { Text(if (busy) "계산 중" else "내 명식 보기") }
     }) { padding ->
@@ -251,7 +263,7 @@ private fun MtjApp(
                 1 -> {
                     if (chart == null) {
                         MtjQuietPanel {
-                        MtjSectionHeader("기본 정보", eyebrow = "명식 기준")
+                        Text("기본 정보", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         OutlinedTextField(
                             value = name,
                             onValueChange = {
@@ -331,7 +343,7 @@ private fun MtjApp(
                         }
                     }
                         MtjQuietPanel {
-                        MtjSectionHeader("시간과 성별", eyebrow = "해석 옵션")
+                        Text("시간과 성별", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                         OutlinedTextField(
                             value = birthTime,
                             onValueChange = { birthTime = it.filter(Char::isDigit).take(4) },
@@ -424,8 +436,6 @@ private fun MtjApp(
                         saveMessage?.let { Text(it) }
                     }
                 }
-                2 -> Text("타로 리딩을 준비하고 있습니다.")
-                3 -> Text("아직 저장된 기록이 없습니다.")
             }
             Spacer(Modifier.height(12.dp))
         }

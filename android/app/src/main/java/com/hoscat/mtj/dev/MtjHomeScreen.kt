@@ -21,11 +21,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,6 +50,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -57,6 +59,7 @@ import com.hoscat.core.model.SajuChart
 import com.hoscat.core.model.toGanjiHanja
 import com.mtj.design.MtjBottomActionScaffold
 import com.mtj.design.MtjEmptyState
+import com.mtj.design.MtjTokens
 import java.time.LocalDate
 import java.time.ZoneId
 import kotlinx.coroutines.CancellationException
@@ -68,7 +71,6 @@ internal fun MtjHomeScreen(
     chart: SajuChart?,
     store: RecordStore,
     question: String,
-    onQuestionChange: (String) -> Unit,
     onStartTarot: () -> Unit,
     onOpenRecord: (String) -> Unit,
     onNavigate: (Int) -> Unit,
@@ -76,7 +78,6 @@ internal fun MtjHomeScreen(
     var records by remember { mutableStateOf<List<Envelope>?>(null) }
     var loadError by remember { mutableStateOf(false) }
     var refresh by remember { mutableIntStateOf(0) }
-    val questionValidation = remember(question) { validateTarotQuestion(question) }
 
     LaunchedEffect(refresh) {
         loadError = false
@@ -159,7 +160,7 @@ internal fun MtjHomeScreen(
                             onClick = { onNavigate(1) },
                             modifier = Modifier.heightIn(min = 48.dp),
                         ) {
-                            Text(if (chart == null) "사주 정보 입력" else "명식 보기")
+                            Text(if (chart == null) "지금 입력하기" else "명식 보기")
                         }
                     }
                 }
@@ -173,26 +174,16 @@ internal fun MtjHomeScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                 ) {
                     Text("지금 궁금한 것은?", style = MaterialTheme.typography.titleLarge)
-                    OutlinedTextField(
-                        value = question,
-                        onValueChange = { next ->
-                            if (acceptsTarotQuestionInput(next)) onQuestionChange(next)
+                    Text(
+                        question.ifBlank { "아직 남긴 질문이 없어요. 타로에서 질문을 남겨보세요." },
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = if (question.isBlank()) {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        } else {
+                            MaterialTheme.colorScheme.onSurface
                         },
-                        label = { Text("질문") },
-                        placeholder = { Text("질문을 입력해 주세요") },
-                        supportingText = {
-                            val visibleError = questionValidation.error.takeIf { question.isNotEmpty() }
-                            Text(
-                                visibleError ?: "최대 240자",
-                                color = if (visibleError == null) {
-                                    MaterialTheme.colorScheme.onSurfaceVariant
-                                } else {
-                                    MaterialTheme.colorScheme.error
-                                },
-                            )
-                        },
-                        isError = questionValidation.error != null && question.isNotEmpty(),
-                        modifier = Modifier.fillMaxWidth(),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Row(
                         modifier = Modifier
@@ -257,7 +248,7 @@ internal fun MtjHomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Surface(
-                            shape = RoundedCornerShape(6.dp),
+                            shape = RoundedCornerShape(MtjTokens.ControlCorner),
                             color = if (record.kind == Kind.SAJU) {
                                 MaterialTheme.colorScheme.secondaryContainer
                             } else {
@@ -291,7 +282,7 @@ internal fun MtjHomeScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         }
-                        Text("›", style = MaterialTheme.typography.titleLarge)
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
                     }
                 }
             }
@@ -347,7 +338,7 @@ private fun HoscatBrandMark() {
     val source = ImageBitmap.imageResource(id = R.drawable.hoscat_common_layer)
     Surface(
         modifier = Modifier.size(34.dp),
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(MtjTokens.ControlCorner),
         color = if (dark) MaterialTheme.colorScheme.inverseSurface else MaterialTheme.colorScheme.surface,
     ) {
         Canvas(Modifier.fillMaxSize().padding(5.dp)) {
@@ -380,11 +371,11 @@ private fun HomeTarotFan() {
                     .offset(x = ((index - 1) * 24).dp)
                     .rotate(angle)
                     .size(width = 44.dp, height = 66.dp)
-                    .clip(RoundedCornerShape(5.dp))
+                    .clip(RoundedCornerShape(MtjTokens.TarotFrameCorner))
                     .border(
                         1.dp,
                         MaterialTheme.colorScheme.outline,
-                        RoundedCornerShape(5.dp),
+                        RoundedCornerShape(MtjTokens.TarotFrameCorner),
                     ),
                 contentAlignment = Alignment.Center,
             ) {

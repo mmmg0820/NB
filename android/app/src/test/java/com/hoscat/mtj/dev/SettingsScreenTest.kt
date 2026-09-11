@@ -14,11 +14,11 @@ class SettingsScreenTest {
 
     @Test fun settingsRowsMatchAccessibilityContractOrder() {
         assertEquals(
-            listOf("화면 모드", "움직임 줄이기", "역방향 포함", "앱 정보"),
+            listOf("화면 모드", "테마", "움직임 줄이기", "역방향 포함", "앱 정보"),
             settingsGroups.flatMap { it.rows }.map { it.label },
         )
         assertEquals(
-            listOf("RadioGroup", "Switch", "Switch", "Text"),
+            listOf("RadioGroup", "RadioGroup", "Switch", "Switch", "Text"),
             settingsGroups.flatMap { it.rows }.map { it.roleName },
         )
     }

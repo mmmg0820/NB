@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,10 +38,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import com.mtj.design.MtjBottomActionScaffold
 import com.mtj.design.MtjEmptyState
 import com.mtj.design.MtjSectionHeader
+import com.mtj.design.MtjTokens
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -109,19 +113,15 @@ internal fun RecordsScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         RecordFilter.entries.forEach { filter ->
-                            TextButton(
+                            val selected = selectedFilter == filter
+                            FilterChip(
+                                selected = selected,
                                 onClick = { selectedFilter = filter },
-                                modifier = Modifier.heightIn(min = 48.dp),
-                            ) {
-                                Text(
-                                    filter.label,
-                                    color = if (selectedFilter == filter) {
-                                        MaterialTheme.colorScheme.primary
-                                    } else {
-                                        MaterialTheme.colorScheme.onSurfaceVariant
-                                    },
-                                )
-                            }
+                                label = { Text(filter.label) },
+                                modifier = Modifier.heightIn(min = 48.dp).semantics {
+                                    stateDescription = if (selected) "선택됨" else "선택 안 됨"
+                                },
+                            )
                         }
                     }
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -130,7 +130,7 @@ internal fun RecordsScreen(
                         TextButton(onClick = { selectedId = null }, modifier = Modifier.heightIn(min = 48.dp)) {
                             Text("목록으로")
                         }
-                        MtjSectionHeader(selected.displayText("title"))
+                        MtjSectionHeader(if (selected.kind == Kind.TAROT) "저장한 리딩" else selected.displayText("title"))
                         Text(
                             if (selected.kind == Kind.SAJU) "사주 기록" else "타로 기록",
                             style = MaterialTheme.typography.labelMedium,
@@ -149,15 +149,29 @@ internal fun RecordsScreen(
             }
             val detail = selected
             if (detail != null) {
-                item {
-                    Text(
-                        detail.displayText("summary"),
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                val tarotSummary = if (detail.kind == Kind.TAROT) tarotReadingSummaryLines(detail.payload) else null
+                if (tarotSummary != null) {
+                    item {
+                        TarotReadingSummaryPanel(tarotSummary, Modifier.padding(vertical = 12.dp))
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    }
+                } else {
+                    item {
+                        Text(
+                            detail.displayText("summary"),
+                            modifier = Modifier.padding(vertical = 16.dp),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    }
                 }
-                items(detail.detailRows()) { row ->
+                // 스프레드/질문은 위 요약 패널로 통합되었으니 상세 행에서는 중복 표시하지 않는다.
+                val rows = if (tarotSummary != null) {
+                    detail.detailRows().filterNot { it.label == "스프레드" || it.label == "질문" }
+                } else {
+                    detail.detailRows()
+                }
+                items(rows) { row ->
                     Column(
                         Modifier.fillMaxWidth().padding(vertical = 14.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -261,7 +275,7 @@ private fun RecordRow(record: Envelope, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Surface(
-                shape = RoundedCornerShape(6.dp),
+                shape = RoundedCornerShape(MtjTokens.ControlCorner),
                 color = if (record.kind == Kind.SAJU) {
                     MaterialTheme.colorScheme.secondaryContainer
                 } else {
@@ -291,7 +305,7 @@ private fun RecordRow(record: Envelope, onClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "상세 보기")
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
         }
     }
 }

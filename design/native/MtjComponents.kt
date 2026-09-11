@@ -1,6 +1,5 @@
 package com.mtj.design
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -47,13 +46,14 @@ fun MtjQuietPanel(
     modifier: Modifier = Modifier,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    // Shadow alone reads as a floating soft surface; pairing it with a hard border
+    // doubled up as "box inside a box" (2026-09-11 UX follow-up), so the border is gone.
     Surface(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(MtjTokens.PanelCorner),
         color = MaterialTheme.colorScheme.surface,
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         tonalElevation = 0.dp,
-        shadowElevation = 0.dp,
+        shadowElevation = 3.dp,
     ) {
         Column(
             Modifier.padding(horizontal = 18.dp, vertical = 16.dp),

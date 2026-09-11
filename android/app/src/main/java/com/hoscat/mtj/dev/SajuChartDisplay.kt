@@ -32,11 +32,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.hoscat.core.model.DataTrustLevel
 import com.hoscat.core.model.GanjiGlyphKind
 import com.hoscat.core.model.Pillar
 import com.hoscat.core.model.SajuChart
 import com.hoscat.core.model.toGanjiHanja
+import com.mtj.design.MtjTokens
 import java.time.OffsetDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -84,12 +84,8 @@ internal enum class SajuPillarGridMode { Standard, Compact }
 internal fun sajuPillarGridMode(maxWidth: Dp, fontScale: Float): SajuPillarGridMode =
     if (maxWidth < 360.dp || fontScale >= 1.3f) SajuPillarGridMode.Compact else SajuPillarGridMode.Standard
 
-internal fun sajuChartAuthorityLabel(chart: SajuChart): String = when {
-    chart.evidence.isVerified && chart.evidence.trustLevel == DataTrustLevel.ExternalAuthorityVerified -> "외부 기관 검증됨"
-    chart.evidence.isVerified -> "내부 검증됨"
-    chart.evidence.trustLevel == DataTrustLevel.InternalStructureChecked -> "내부 구조 검토됨"
-    else -> "검토 필요"
-}
+internal fun sajuChartAuthorityLabel(chart: SajuChart): String =
+    verificationStateLabel(chart.evidence.trustLevel.name, chart.evidence.isVerified)
 
 internal fun sajuChartBasisLabel(chart: SajuChart): String =
     chart.evidence.calculationBasisLabel
@@ -156,7 +152,7 @@ internal fun SajuChartDisplay(chart: SajuChart, modifier: Modifier = Modifier) {
                 sajuChartAuthorityLabel(chart),
                 modifier = Modifier.testTag("saju-authority-state"),
                 style = MaterialTheme.typography.labelSmall,
-                color = if (chart.evidence.isVerified) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error,
+                color = if (chart.evidence.isVerified) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Column(
@@ -265,7 +261,7 @@ private fun SajuPillarTile(
                     "${display.role}, ${display.stemText}, ${display.branchText}, ${display.elementText}"
                 }
             },
-        shape = RoundedCornerShape(8.dp),
+        shape = RoundedCornerShape(MtjTokens.ControlCorner),
         color = if (display.isDayMaster) MaterialTheme.colorScheme.secondaryContainer else MaterialTheme.colorScheme.surfaceVariant,
         border = BorderStroke(
             1.dp,

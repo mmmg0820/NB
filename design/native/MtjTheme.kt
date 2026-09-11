@@ -57,12 +57,16 @@ object MtjTokens {
     val DarkError = Color(0xFFFFACB4)
     val DarkSuccess = Color(0xFF96DCB7)
 
-    val HeroCorner = 8.dp
-    val PanelCorner = 8.dp
-    val ActionCorner = 8.dp
-    val ControlCorner = 8.dp
-    val TarotFrameCorner = 6.dp
+    // HyperOS-aligned continuous curvature (reinstates the 20260909 v1 scale that
+    // was later flattened to 8dp across the board; see UX audit 2026-09-11).
+    val HeroCorner = 28.dp
+    val PanelCorner = 22.dp
+    val ActionCorner = 16.dp
+    val ControlCorner = 12.dp
+    val TarotFrameCorner = 8.dp
     val SectionCorner = 0.dp
+    // Premium design spec (2026-09-11): bottom sheets get their own, larger top radius.
+    val SheetCorner = 24.dp
 
     val SideCompact = 16.dp
     val SideMedium = 20.dp
@@ -124,6 +128,41 @@ object MtjTokens {
     const val ReducedMotionMillis = 0
 }
 
+/**
+ * Selectable "Glow" theme (added 2026-09-11 per user request): a brighter, warmer
+ * palette alongside the classic Oracle Lens colors, offered as a second choice under
+ * Settings rather than a replacement. Same shape/spacing/type tokens as MtjTokens —
+ * only the color role assignments differ. Contrast verified against WCAG AA (>=4.5:1
+ * body text, >=3:1 large text) the same way as the classic palette.
+ */
+object MtjGlowTokens {
+    val Canvas = Color(0xFFFFF8F6)
+    val Surface = Color(0xFFFFFFFF)
+    val Ink = Color(0xFF2B1620)
+    val Muted = Color(0xFF8B6B74)
+    val Primary = Color(0xFFD6356A)
+    val PrimarySoft = Color(0xFFFCE4EC)
+    val Context = Color(0xFF7A5FB0)
+    val ContextSoft = Color(0xFFEDE7FA)
+    val SurfaceMuted = Color(0xFFFBEFF1)
+    val Border = Color(0xFFE7C7D0)
+    val Divider = Color(0xFFF1DEE3)
+    val Error = Color(0xFFAE2638)
+
+    val DarkCanvas = Color(0xFF1E1319)
+    val DarkSurface = Color(0xFF2A1B24)
+    val DarkSurfaceHigh = Color(0xFF3A2530)
+    val DarkInk = Color(0xFFFBEFF3)
+    val DarkMuted = Color(0xFFD9B8C4)
+    val DarkBorder = Color(0xFF5A3A47)
+    val DarkDivider = Color(0xFF422A34)
+    val DarkPrimary = Color(0xFFFF7AAC)
+    val DarkOnPrimary = Color(0xFF3D1424)
+    val DarkPrimaryContainer = Color(0xFF54233A)
+    val DarkContext = Color(0xFFC3AEEA)
+    val DarkError = Color(0xFFFFACB4)
+}
+
 val MtjBottomSurfaceBrush: Brush = Brush.verticalGradient(
     listOf(MtjTokens.GlassSurface, MtjTokens.Surface),
 )
@@ -141,6 +180,7 @@ val MtjDarkScreenBrush: Brush = Brush.verticalGradient(
 )
 
 enum class MtjThemeMode { System, Light, Dark }
+enum class MtjColorTheme { Classic, Glow }
 
 private val MtjLightColors = lightColorScheme(
     primary = MtjTokens.Primary,
@@ -220,6 +260,84 @@ private val MtjDarkColors = darkColorScheme(
     surfaceContainerLowest = MtjTokens.DarkCanvas,
 )
 
+private val MtjGlowLightColors = lightColorScheme(
+    primary = MtjGlowTokens.Primary,
+    onPrimary = MtjGlowTokens.Surface,
+    primaryContainer = MtjGlowTokens.PrimarySoft,
+    onPrimaryContainer = MtjGlowTokens.Primary,
+    secondary = MtjGlowTokens.Context,
+    onSecondary = MtjGlowTokens.Surface,
+    secondaryContainer = MtjGlowTokens.ContextSoft,
+    onSecondaryContainer = MtjGlowTokens.Ink,
+    tertiary = MtjGlowTokens.Context,
+    onTertiary = MtjGlowTokens.Surface,
+    tertiaryContainer = MtjGlowTokens.ContextSoft,
+    onTertiaryContainer = MtjGlowTokens.Ink,
+    background = MtjGlowTokens.Canvas,
+    onBackground = MtjGlowTokens.Ink,
+    surface = MtjGlowTokens.Surface,
+    onSurface = MtjGlowTokens.Ink,
+    surfaceVariant = MtjGlowTokens.SurfaceMuted,
+    onSurfaceVariant = MtjGlowTokens.Muted,
+    surfaceTint = MtjGlowTokens.Surface,
+    inverseSurface = MtjGlowTokens.Ink,
+    inverseOnSurface = MtjGlowTokens.Surface,
+    inversePrimary = MtjGlowTokens.PrimarySoft,
+    error = MtjGlowTokens.Error,
+    onError = MtjGlowTokens.Surface,
+    errorContainer = MtjGlowTokens.PrimarySoft,
+    onErrorContainer = MtjGlowTokens.Primary,
+    outline = MtjGlowTokens.Border,
+    outlineVariant = MtjGlowTokens.Divider,
+    scrim = MtjGlowTokens.Ink,
+    surfaceBright = MtjGlowTokens.Surface,
+    surfaceDim = MtjGlowTokens.SurfaceMuted,
+    surfaceContainer = MtjGlowTokens.Canvas,
+    surfaceContainerHigh = MtjGlowTokens.Surface,
+    surfaceContainerHighest = MtjGlowTokens.SurfaceMuted,
+    surfaceContainerLow = MtjGlowTokens.Canvas,
+    surfaceContainerLowest = MtjGlowTokens.Surface,
+)
+
+private val MtjGlowDarkColors = darkColorScheme(
+    primary = MtjGlowTokens.DarkPrimary,
+    onPrimary = MtjGlowTokens.DarkOnPrimary,
+    primaryContainer = MtjGlowTokens.DarkPrimaryContainer,
+    onPrimaryContainer = MtjGlowTokens.DarkInk,
+    secondary = MtjGlowTokens.DarkContext,
+    onSecondary = MtjGlowTokens.DarkOnPrimary,
+    secondaryContainer = MtjGlowTokens.DarkSurfaceHigh,
+    onSecondaryContainer = MtjGlowTokens.DarkInk,
+    tertiary = MtjGlowTokens.DarkContext,
+    onTertiary = MtjGlowTokens.DarkOnPrimary,
+    tertiaryContainer = MtjGlowTokens.DarkSurfaceHigh,
+    onTertiaryContainer = MtjGlowTokens.DarkInk,
+    background = MtjGlowTokens.DarkCanvas,
+    onBackground = MtjGlowTokens.DarkInk,
+    surface = MtjGlowTokens.DarkSurface,
+    onSurface = MtjGlowTokens.DarkInk,
+    surfaceVariant = MtjGlowTokens.DarkSurfaceHigh,
+    onSurfaceVariant = MtjGlowTokens.DarkMuted,
+    surfaceTint = Color.Transparent,
+    inverseSurface = MtjGlowTokens.DarkInk,
+    inverseOnSurface = MtjGlowTokens.DarkCanvas,
+    inversePrimary = MtjGlowTokens.Primary,
+    error = MtjGlowTokens.DarkError,
+    onError = MtjGlowTokens.DarkOnPrimary,
+    errorContainer = MtjGlowTokens.DarkPrimaryContainer,
+    onErrorContainer = MtjGlowTokens.DarkInk,
+    outline = MtjGlowTokens.DarkBorder,
+    outlineVariant = MtjGlowTokens.DarkDivider,
+    scrim = Color(0xFF000000),
+    surfaceBright = MtjGlowTokens.DarkSurfaceHigh,
+    surfaceDim = MtjGlowTokens.DarkCanvas,
+    surfaceContainer = MtjGlowTokens.DarkCanvas,
+    surfaceContainerHigh = MtjGlowTokens.DarkSurfaceHigh,
+    surfaceContainerHighest = MtjGlowTokens.DarkSurfaceHigh,
+    surfaceContainerLow = MtjGlowTokens.DarkCanvas,
+    surfaceContainerLowest = MtjGlowTokens.DarkCanvas,
+)
+
 private val MtjTypography = Typography(
     displayLarge = MtjTokens.Brand,
     displayMedium = MtjTokens.Brand,
@@ -239,14 +357,22 @@ private val MtjTypography = Typography(
 )
 
 @Composable
-fun MtjTheme(themeMode: MtjThemeMode = MtjThemeMode.System, content: @Composable () -> Unit) {
+fun MtjTheme(
+    themeMode: MtjThemeMode = MtjThemeMode.System,
+    colorTheme: MtjColorTheme = MtjColorTheme.Classic,
+    content: @Composable () -> Unit,
+) {
     val darkTheme = when (themeMode) {
         MtjThemeMode.System -> isSystemInDarkTheme()
         MtjThemeMode.Light -> false
         MtjThemeMode.Dark -> true
     }
+    val colorScheme = when (colorTheme) {
+        MtjColorTheme.Classic -> if (darkTheme) MtjDarkColors else MtjLightColors
+        MtjColorTheme.Glow -> if (darkTheme) MtjGlowDarkColors else MtjGlowLightColors
+    }
     MaterialTheme(
-        colorScheme = if (darkTheme) MtjDarkColors else MtjLightColors,
+        colorScheme = colorScheme,
         typography = MtjTypography,
         shapes = Shapes(
             extraSmall = RoundedCornerShape(MtjTokens.TarotFrameCorner),

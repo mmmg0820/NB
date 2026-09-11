@@ -7,18 +7,19 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TarotQuestionValidationTest {
-    @Test fun emptyQuestionCannotStart() {
+    // 질문은 선택 사항이다(2026-09-12 변경) — 비어 있어도 리딩을 시작할 수 있어야 한다.
+    @Test fun emptyQuestionCanStart() {
         val validation = validateTarotQuestion("")
         assertEquals(0, validation.codePointCount)
-        assertFalse(validation.canStart)
-        assertEquals("질문을 입력해주세요.", validation.error)
+        assertTrue(validation.canStart)
+        assertNull(validation.error)
     }
 
-    @Test fun whitespaceOnlyQuestionCannotStart() {
+    @Test fun whitespaceOnlyQuestionCanStart() {
         val validation = validateTarotQuestion("  \n\t  ")
         assertEquals(6, validation.codePointCount)
-        assertFalse(validation.canStart)
-        assertEquals("질문을 입력해주세요.", validation.error)
+        assertTrue(validation.canStart)
+        assertNull(validation.error)
     }
 
     @Test fun questionAt239CodePointsCanStart() {

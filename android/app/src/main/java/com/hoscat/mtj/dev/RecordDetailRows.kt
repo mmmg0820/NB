@@ -45,7 +45,7 @@ private fun sajuDetailRows(payload: Value.Obj): List<RecordDetailRow> {
     )
 }
 
-private fun verificationStateLabel(trust: String, isVerified: Boolean): String = when {
+internal fun verificationStateLabel(trust: String, isVerified: Boolean): String = when {
     isVerified && trust == "ExternalAuthorityVerified" -> "외부 기관 검증됨"
     isVerified -> "내부 검증됨"
     trust == "InternalStructureChecked" -> "내부 구조 검토됨"
@@ -74,11 +74,11 @@ private fun tarotDetailRows(payload: Value.Obj): List<RecordDetailRow> {
     )
 }
 
-private fun Value.Obj.obj(key: String): Value.Obj? = fields[key] as? Value.Obj
-private fun Value.Obj.arr(key: String): List<Value>? = (fields[key] as? Value.Arr)?.items
-private fun Value.Obj.str(key: String): String? = (fields[key] as? Value.Str)?.text
-private fun Value.Obj.num(key: String): String? = (fields[key] as? Value.Num)?.token
-private fun Value.Obj.bool(key: String): Boolean? = (fields[key] as? Value.Bool)?.value
+internal fun Value.Obj.obj(key: String): Value.Obj? = fields[key] as? Value.Obj
+internal fun Value.Obj.arr(key: String): List<Value>? = (fields[key] as? Value.Arr)?.items
+internal fun Value.Obj.str(key: String): String? = (fields[key] as? Value.Str)?.text
+internal fun Value.Obj.num(key: String): String? = (fields[key] as? Value.Num)?.token
+internal fun Value.Obj.bool(key: String): Boolean? = (fields[key] as? Value.Bool)?.value
 
 private fun Value.Obj.pillar(key: String): String? {
     val pillar = obj(key) ?: return null

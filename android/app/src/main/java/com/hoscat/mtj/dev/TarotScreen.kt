@@ -2,6 +2,8 @@ package com.hoscat.mtj.dev
 
 import android.graphics.ImageDecoder
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.*
@@ -38,7 +41,9 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
@@ -51,6 +56,7 @@ import androidx.compose.ui.zIndex
 import com.mtj.design.MtjBottomActionScaffold
 import com.mtj.design.MtjQuietPanel
 import com.mtj.design.MtjSectionHeader
+import com.mtj.design.MtjTokens
 import com.mtj.tarot.*
 import com.softcat.mystictarot.*
 import kotlinx.coroutines.Dispatchers
@@ -60,6 +66,15 @@ import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
 
+/**
+ * The question is optional in the UI (validateTarotQuestion no longer requires it), but
+ * [TarotRecreationState]'s own invariant still requires `questionAtStart` to be non-blank
+ * and pre-trimmed (see its `validate()`). Rather than relaxing that state-machine contract —
+ * which also guards serialization/restoration — a neutral placeholder is substituted here
+ * only when the user left the field blank.
+ */
+private fun startableQuestion(question: String): String = question.trim().ifBlank { TAROT_QUESTION_NOT_PROVIDED }
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun TarotScreen(
@@ -67,6 +82,8 @@ internal fun TarotScreen(
     question: String,
     onQuestionChange: (String) -> Unit,
     onTabSelected: (Int) -> Unit,
+    pendingSpreadKey: String? = null,
+    onPendingSpreadKeyConsumed: () -> Unit = {},
 ) {
     val context = LocalContext.current
     var deck by remember { mutableStateOf<TarotDeck?>(null) }
@@ -75,7 +92,7 @@ internal fun TarotScreen(
     val questionValidation = remember(question) { validateTarotQuestion(question) }
     var questionInputError by rememberSaveable { mutableStateOf<String?>(null) }
     var pendingQuestionPreset by rememberSaveable { mutableStateOf<String?>(null) }
-    var reversed by rememberSaveable { mutableStateOf(false) }
+    var reversed by rememberSaveable { mutableStateOf(readIncludeReversedDefault(context)) }
     var selectedCategoryId by rememberSaveable { mutableStateOf<String?>(null) }
     var session by rememberSaveable(stateSaver = TarotRecreationSaver) {
         mutableStateOf(TarotRecreationState())
@@ -99,6 +116,16 @@ internal fun TarotScreen(
         try { deck = withContext(Dispatchers.IO) { MtjTarotCatalog.load(context.assets) } }
         catch (e: kotlinx.coroutines.CancellationException) { throw e }
         catch (_: Exception) { error = "카드 데이터를 불러오지 못했습니다." }
+    }
+    LaunchedEffect(deck, pendingSpreadKey) {
+        val readyDeck = deck ?: return@LaunchedEffect
+        val key = pendingSpreadKey ?: return@LaunchedEffect
+        val option = normalSpreadOptions.firstOrNull { it.key == key }
+        if (option != null && !session.started) {
+            session = TarotRecreationState.start(readyDeck, option, startableQuestion(question), reversed)
+            selectedCategoryId = tarotCategoryFor(option)?.id
+        }
+        onPendingSpreadKeyConsumed()
     }
     fun restart() {
         selectedCategoryId = spread?.let(::tarotCategoryFor)?.id
@@ -142,24 +169,34 @@ internal fun TarotScreen(
                 deck == null -> CircularProgressIndicator()
                 result != null -> {
                     val snapshot = checkNotNull(result)
+                    val reduceMotion = remember { readReduceMotionDefault(context) }
+                    var revealed by remember(snapshot) { mutableStateOf(reduceMotion) }
+                    LaunchedEffect(snapshot) { revealed = true }
+                    val revealProgress by animateFloatAsState(
+                        targetValue = if (revealed) 1f else 0f,
+                        animationSpec = tween(
+                            durationMillis = if (reduceMotion) {
+                                MtjTokens.ReducedMotionMillis
+                            } else {
+                                MtjTokens.GatherMillis + MtjTokens.SpreadMillis + MtjTokens.SettleMillis
+                            },
+                        ),
+                        label = "tarot-result-reveal",
+                    )
                     LazyColumn(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .graphicsLayer {
+                                alpha = revealProgress
+                                val scale = 0.96f + 0.04f * revealProgress
+                                scaleX = scale
+                                scaleY = scale
+                            },
                         verticalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         item {
-                            MtjQuietPanel {
-                                Text(
-                                    "${snapshot.spread.cardCount}장 | ${snapshot.spread.title}",
-                                    style = MaterialTheme.typography.titleLarge,
-                                )
-                                Text(
-                                    snapshot.spread.subtitle,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                                Text("질문", style = MaterialTheme.typography.labelLarge)
-                                Text(snapshot.reading.question)
-                            }
+                            TarotReadingSummaryPanel(tarotReadingSummaryLines(snapshot))
                         }
                         saveMessage?.let { message -> item { Text(message) } }
                         item {
@@ -293,17 +330,31 @@ internal fun TarotScreen(
                                             )
                                         }
                                         .testTag("tarot-result-drawer-peek"),
-                                    shape = RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp),
+                                    shape = RoundedCornerShape(
+                                        topStart = MtjTokens.SheetCorner,
+                                        topEnd = MtjTokens.SheetCorner,
+                                    ),
                                     color = MaterialTheme.colorScheme.secondaryContainer,
                                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
                                 ) {
-                                    Row(
-                                        Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically,
-                                    ) {
-                                        Text("결과 서랍", style = MaterialTheme.typography.titleSmall)
-                                        Icon(Icons.Default.KeyboardArrowUp, contentDescription = "결과 열기")
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Spacer(
+                                            Modifier
+                                                .padding(top = 8.dp)
+                                                .size(width = 32.dp, height = 4.dp)
+                                                .background(
+                                                    MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.35f),
+                                                    RoundedCornerShape(2.dp),
+                                                ),
+                                        )
+                                        Row(
+                                            Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 10.dp),
+                                            horizontalArrangement = Arrangement.Center,
+                                            verticalAlignment = Alignment.CenterVertically,
+                                        ) {
+                                            Text("결과 서랍", style = MaterialTheme.typography.titleSmall)
+                                            Icon(Icons.Default.KeyboardArrowUp, contentDescription = "결과 열기")
+                                        }
                                     }
                                 }
                             }
@@ -341,7 +392,7 @@ internal fun TarotScreen(
                                     questionInputError = "붙여넣을 내용이 너무 깁니다. 240자 이내로 줄여 다시 입력해주세요."
                                 }
                             }, isError = questionInputError != null || (question.isNotBlank() && questionValidation.error != null),
-                                label = { Text("질문") },
+                                label = { Text("질문 (선택)") },
                                 placeholder = { Text("오늘 무엇을 묻고 싶나요?") },
                                 supportingText = if (question.isNotBlank() || questionInputError != null) {{
                                     Text(questionInputError ?: questionValidation.error ?: "${questionValidation.codePointCount}/$MAX_TAROT_QUESTION_CODE_POINTS")
@@ -378,7 +429,7 @@ internal fun TarotScreen(
                                         )
                                     }
                                     TarotSpreadMiniPreview(representative, Modifier.width(92.dp).height(48.dp))
-                                    Text("›", style = MaterialTheme.typography.titleLarge)
+                                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
                                 }
                             }
                         }
@@ -403,11 +454,11 @@ internal fun TarotScreen(
                                         session = TarotRecreationState.start(
                                             checkNotNull(deck),
                                             option,
-                                            question,
+                                            startableQuestion(question),
                                             reversed,
                                         )
                                     } else {
-                                        questionInputError = questionValidation.error ?: "질문을 입력해주세요."
+                                        questionInputError = questionValidation.error
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth().heightIn(min = 82.dp),
@@ -428,7 +479,7 @@ internal fun TarotScreen(
                                         )
                                     }
                                     TarotSpreadMiniPreview(option, Modifier.width(112.dp).height(64.dp))
-                                    Text("›", style = MaterialTheme.typography.titleLarge)
+                                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
                                 }
                             }
                         }
@@ -454,8 +505,8 @@ private fun TarotSelectionBoard(
     val maxY = slots.maxOfOrNull { it.y }?.coerceAtLeast(0f) ?: 0f
     BoxWithConstraints(
         modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(MtjTokens.ControlCorner))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(MtjTokens.ControlCorner))
             .padding(10.dp)
             .semantics { contentDescription = "${spread.title}, ${spread.cardCount}장 스프레드 무대" },
     ) {
@@ -473,11 +524,11 @@ private fun TarotSelectionBoard(
                     .offset(x = travelX * xFraction, y = travelY * yFraction)
                     .size(slotWidth, slotHeight)
                     .rotate(slot.rotation)
-                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(4.dp))
+                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(MtjTokens.TarotFrameCorner))
                     .border(
                         if (card == null) 1.dp else 2.dp,
                         if (card == null) MaterialTheme.colorScheme.outline else MaterialTheme.colorScheme.primary,
-                        RoundedCornerShape(4.dp),
+                        RoundedCornerShape(MtjTokens.TarotFrameCorner),
                     )
                     .semantics {
                         contentDescription = if (card == null) {
@@ -516,11 +567,13 @@ private fun TarotDeckCardChoice(
     Surface(
         onClick = { if (canSelect) onCardTapped(card) },
         enabled = canSelect,
-        shape = RoundedCornerShape(5.dp),
+        shape = RoundedCornerShape(MtjTokens.TarotFrameCorner),
         color = Color.Transparent,
         modifier = modifier.semantics {
             role = Role.Button
-            contentDescription = "카드 ${position + 1}, " + if (selectedIndex >= 0) {
+            selected = selectedIndex >= 0
+            contentDescription = "카드 ${position + 1}"
+            stateDescription = if (selectedIndex >= 0) {
                 "${selectedIndex + 1}번째 선택"
             } else if (!canSelect) {
                 "필요한 장수 선택 완료"
@@ -740,8 +793,8 @@ private fun SpatialTarotSpreadOverview(
                             rotationZ = rotation
                             clip = false
                         }
-                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(4.dp))
-                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(4.dp)),
+                        .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(MtjTokens.TarotFrameCorner))
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(MtjTokens.TarotFrameCorner)),
                 ) {
                     TarotArt(card.cardId, card.nameKr, Modifier.fillMaxSize().padding(2.dp), fixedBounds = true)
                 }
@@ -800,8 +853,8 @@ private fun TarotSpreadMiniPreview(option: SpreadOption, modifier: Modifier = Mo
     val maxY = slots.maxOfOrNull { it.y }?.coerceAtLeast(0f) ?: 0f
     BoxWithConstraints(
         modifier
-            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
-            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(8.dp))
+            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(MtjTokens.ControlCorner))
+            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(MtjTokens.ControlCorner))
             .padding(5.dp),
     ) {
         val cardWidth = 11.dp
@@ -896,6 +949,27 @@ private val TarotRecreationSaver = Saver<TarotRecreationState, Any>(
     restore = { TarotRecreationState.restore(it) },
 )
 
+/**
+ * Small bounded in-memory cache so the same card's artwork is decoded once per process,
+ * not once per place it happens to be drawn (spread overview thumbnail, detail panel, a
+ * revisited saved record can all show the same card.id within one session).
+ */
+private object TarotArtCache {
+    private const val MAX_ENTRIES = 32
+    private val cache = object : LinkedHashMap<Int, ImageBitmap>(MAX_ENTRIES, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<Int, ImageBitmap>?): Boolean =
+            size > MAX_ENTRIES
+    }
+
+    @Synchronized
+    fun get(id: Int): ImageBitmap? = cache[id]
+
+    @Synchronized
+    fun put(id: Int, bitmap: ImageBitmap) {
+        cache[id] = bitmap
+    }
+}
+
 @Composable
 private fun TarotArt(
     id: Int,
@@ -906,17 +980,20 @@ private fun TarotArt(
     detailHeight: Dp = 360.dp,
 ) {
     val assets = LocalContext.current.assets
-    var bitmap by remember(id) { mutableStateOf<ImageBitmap?>(null) }
+    var bitmap by remember(id) { mutableStateOf(TarotArtCache.get(id)) }
     var failed by remember(id) { mutableStateOf(false) }
     LaunchedEffect(id) {
+        if (bitmap != null) return@LaunchedEffect
         try {
-            bitmap = withContext(Dispatchers.IO) {
+            val decoded = withContext(Dispatchers.IO) {
                 val source = ImageDecoder.createSource(assets, MtjTarotCatalog.imageAssetPath(id))
                 ImageDecoder.decodeBitmap(source) { decoder, info, _ ->
                     val scale = minOf(1f, 720f / maxOf(info.size.width, info.size.height))
                     decoder.setTargetSize(maxOf(1, (info.size.width * scale).toInt()), maxOf(1, (info.size.height * scale).toInt()))
                 }.asImageBitmap()
             }
+            TarotArtCache.put(id, decoded)
+            bitmap = decoded
         } catch (e: kotlinx.coroutines.CancellationException) { throw e }
         catch (_: Exception) { failed = true }
     }

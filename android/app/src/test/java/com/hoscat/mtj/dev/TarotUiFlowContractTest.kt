@@ -5,7 +5,6 @@ import com.softcat.mystictarot.TarotCard
 import com.softcat.mystictarot.TarotDeck
 import com.softcat.mystictarot.selectableSpreadOptions
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -15,14 +14,15 @@ class TarotUiFlowContractTest {
         TarotCard(it, "Card $it", "카드 $it", "Major Arcana", "Meaning $it")
     })
 
-    @Test fun emptyQuestionCannotBecomeAQuickDefaultReading() {
+    // 질문은 선택 사항이다(2026-09-12 변경) — 빈 질문으로도 리딩을 시작할 수 있다.
+    @Test fun emptyQuestionCanBecomeAQuickDefaultReading() {
         val blank = validateTarotQuestion("")
         val whitespace = validateTarotQuestion("   ")
 
-        assertFalse(blank.canStart)
-        assertFalse(whitespace.canStart)
-        assertEquals("질문을 입력해주세요.", blank.error)
-        assertEquals("질문을 입력해주세요.", whitespace.error)
+        assertTrue(blank.canStart)
+        assertTrue(whitespace.canStart)
+        assertNull(blank.error)
+        assertNull(whitespace.error)
     }
 
     @Test fun oneCardSpreadUsesTheSameExplicitSelectionFlow() {

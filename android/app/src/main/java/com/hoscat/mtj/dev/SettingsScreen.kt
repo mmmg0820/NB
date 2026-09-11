@@ -34,6 +34,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import com.mtj.design.MtjBottomActionScaffold
+import com.mtj.design.MtjColorTheme
 import com.mtj.design.MtjSectionHeader
 import com.mtj.design.MtjThemeMode
 
@@ -49,7 +50,10 @@ internal data class SettingsRowContract(
 internal val settingsGroups = listOf(
     SettingsGroup(
         "화면",
-        listOf(SettingsRowContract("화면 모드", "화면 모드 설정", "RadioGroup", "시스템, 라이트, 다크")),
+        listOf(
+            SettingsRowContract("화면 모드", "화면 모드 설정", "RadioGroup", "시스템, 라이트, 다크"),
+            SettingsRowContract("테마", "테마 설정", "RadioGroup", "클래식, 글로우"),
+        ),
     ),
     SettingsGroup(
         "리딩",
@@ -70,11 +74,25 @@ internal fun readThemeMode(context: Context): MtjThemeMode {
     return MtjThemeMode.values().firstOrNull { it.name == raw } ?: MtjThemeMode.System
 }
 
+internal fun readColorTheme(context: Context): MtjColorTheme {
+    val raw = context.getSharedPreferences(SETTINGS_PREFS, Context.MODE_PRIVATE)
+        .getString(KEY_COLOR_THEME, MtjColorTheme.Classic.name)
+    return MtjColorTheme.values().firstOrNull { it.name == raw } ?: MtjColorTheme.Classic
+}
+
+internal fun readIncludeReversedDefault(context: Context): Boolean =
+    context.getSharedPreferences(SETTINGS_PREFS, Context.MODE_PRIVATE).getBoolean(KEY_INCLUDE_REVERSED, false)
+
+internal fun readReduceMotionDefault(context: Context): Boolean =
+    context.getSharedPreferences(SETTINGS_PREFS, Context.MODE_PRIVATE).getBoolean(KEY_REDUCE_MOTION, false)
+
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 internal fun SettingsScreen(
     themeMode: MtjThemeMode,
     onThemeModeChanged: (MtjThemeMode) -> Unit,
+    colorTheme: MtjColorTheme,
+    onColorThemeChanged: (MtjColorTheme) -> Unit,
     onTabSelected: (Int) -> Unit,
 ) {
     val context = LocalContext.current
@@ -115,6 +133,32 @@ internal fun SettingsScreen(
                                     onThemeModeChanged(mode)
                                 },
                                 shape = SegmentedButtonDefaults.itemShape(index, modes.size),
+                                modifier = Modifier.heightIn(min = 48.dp),
+                            ) { Text(label) }
+                        }
+                    }
+                    Text("테마", style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        when (colorTheme) {
+                            MtjColorTheme.Classic -> "차분한 로즈·민트 톤"
+                            MtjColorTheme.Glow -> "밝고 화사한 톤"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth()) {
+                        val themes = listOf(
+                            MtjColorTheme.Classic to "클래식",
+                            MtjColorTheme.Glow to "글로우",
+                        )
+                        themes.forEachIndexed { index, (candidate, label) ->
+                            SegmentedButton(
+                                selected = colorTheme == candidate,
+                                onClick = {
+                                    preferences.edit().putString(KEY_COLOR_THEME, candidate.name).apply()
+                                    onColorThemeChanged(candidate)
+                                },
+                                shape = SegmentedButtonDefaults.itemShape(index, themes.size),
                                 modifier = Modifier.heightIn(min = 48.dp),
                             ) { Text(label) }
                         }
@@ -196,5 +240,6 @@ private fun SettingsSwitchRow(
 
 private const val SETTINGS_PREFS = "mtj-settings-v1"
 private const val KEY_THEME_MODE = "theme-mode"
+private const val KEY_COLOR_THEME = "color-theme"
 private const val KEY_REDUCE_MOTION = "reduce-motion"
 private const val KEY_INCLUDE_REVERSED = "include-reversed"
