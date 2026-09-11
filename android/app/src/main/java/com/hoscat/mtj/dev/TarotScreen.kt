@@ -41,8 +41,6 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.text.AnnotatedString
@@ -553,17 +551,7 @@ private fun TarotDeckCardChoice(
                     onClickLabel = if (selectedIndex >= 0) "선택 취소" else "카드 선택",
                     onClick = { onCardTapped(card) },
                 )
-                .semantics(mergeDescendants = true) {
-                    selected = selectedIndex >= 0
-                    contentDescription = "카드 ${position + 1}"
-                    stateDescription = if (selectedIndex >= 0) {
-                        "${selectedIndex + 1}번째 선택"
-                    } else if (!canSelect) {
-                        "필요한 장수 선택 완료"
-                    } else {
-                        "선택 안 됨"
-                    }
-                },
+                .tarotCardChoiceSemantics(position, selectedIndex, canSelect) { onCardTapped(card) },
         ) {
             BoxWithConstraints(Modifier.fillMaxSize().padding(1.dp), contentAlignment = Alignment.Center) {
                 val cardWidth = minOf(maxWidth, maxHeight * TAROT_CARD_ASPECT_RATIO)
@@ -588,8 +576,7 @@ private fun TarotDeckCardChoice(
                             maxLines = 1,
                             modifier = Modifier
                                 .background(MtjTokens.Primary, RoundedCornerShape(2.dp))
-                                .padding(horizontal = 2.dp)
-                                .clearAndSetSemantics { },
+                                .padding(horizontal = 2.dp),
                         )
                     }
                 }

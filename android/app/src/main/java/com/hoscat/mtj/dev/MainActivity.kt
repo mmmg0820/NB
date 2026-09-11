@@ -91,12 +91,15 @@ private fun MtjApp(
     var showSolarDatePicker by rememberSaveable { mutableStateOf(false) }
     var gender by rememberSaveable { mutableIntStateOf(2) }
     var busy by remember { mutableStateOf(false) }
-    var evaluation by remember { mutableStateOf<MtjSajuEvaluation?>(null) }
+    var sajuState by rememberSaveable(stateSaver = SajuRecreationSaver) {
+        mutableStateOf(SajuRecreationState())
+    }
+    val evaluation = sajuState.evaluation
     val context = LocalContext.current
     val runtime = remember { MtjSajuRuntime(context) }
     val store = remember { RecordStore(context) }
-    val saveBatch = remember(evaluation) { (evaluation as? MtjSajuEvaluation.Accepted)?.let(RecordSnapshots::saju) }
-    var saveMessage by remember(evaluation) { mutableStateOf<String?>(null) }
+    val saveBatch = sajuState.saveBatch
+    var saveMessage by rememberSaveable(sajuState) { mutableStateOf<String?>(null) }
     var saving by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val chart = (evaluation as? MtjSajuEvaluation.Accepted)?.chart
@@ -215,7 +218,7 @@ private fun MtjApp(
                         busy = true
                         scope.launch {
                             try {
-                                evaluation = runtime.evaluate(BirthInputDraft(
+                                sajuState = SajuRecreationState.from(runtime.evaluate(BirthInputDraft(
                                     name = name,
                                     year = submittedDate.year,
                                     month = submittedDate.month,
@@ -225,7 +228,7 @@ private fun MtjApp(
                                     calendarType = if (lunar) CalendarType.Lunar else CalendarType.Solar,
                                     isLeapMonth = lunar && leap,
                                     gender = listOf(Gender.Female, Gender.Male, Gender.Unknown)[gender],
-                                ))
+                                )))
                             } finally { busy = false }
                         }
                     }
@@ -395,7 +398,7 @@ private fun MtjApp(
                         ) {
                             TextButton(
                                 onClick = {
-                                    evaluation = null
+                                    sajuState = SajuRecreationState()
                                     saveMessage = null
                                 },
                                 modifier = Modifier.weight(1f).heightIn(min = 48.dp),
