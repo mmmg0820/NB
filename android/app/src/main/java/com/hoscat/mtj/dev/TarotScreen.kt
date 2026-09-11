@@ -119,6 +119,8 @@ internal fun TarotScreen(
     BackHandler(enabled = result != null) {
         session = session.reopenSelection()
     }
+    // Refresh subcomposed content with the same session snapshot as its deck and result.
+    key(session) {
     MtjBottomActionScaffold(
         selectedTab = 2,
         onTabSelected = onTabSelected,
@@ -458,6 +460,7 @@ internal fun TarotScreen(
                 }
             }
         }
+    }
     }
 }
 
