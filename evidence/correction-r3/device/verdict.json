@@ -1,0 +1,149 @@
+{
+  "verdict": "TARGETED_SMOKE_PASS",
+  "scope": "Requested concise independent final smoke only",
+  "apk_sha256": "fda7a48369623256154bc39620b073df4fa28fd48ec1f263d191e912e2bba4ad",
+  "checks": [
+    {
+      "id": "installed_sha",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/installed-base.apk",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/installed.json"
+      ],
+      "detail": "fda7a48369623256154bc39620b073df4fa28fd48ec1f263d191e912e2bba4ad"
+    },
+    {
+      "id": "19-saju-unknown-dark",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/19-saju-unknown-dark.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/19-saju-unknown-dark.png",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/19-saju-unknown-dark.json"
+      ],
+      "detail": "Same unknown-hour result remains without recalculation"
+    },
+    {
+      "id": "20-saju-unknown-light",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/20-saju-unknown-light.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/20-saju-unknown-light.png",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/20-saju-unknown-light.json"
+      ],
+      "detail": "Same unknown-hour result remains without recalculation"
+    },
+    {
+      "id": "raw_retap",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/05-back3.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/06-raw-retap2.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/06-raw-retap2.png"
+      ],
+      "detail": "3→2; card77 deselected; drawer closed"
+    },
+    {
+      "id": "a11y_retap",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/07-a11y-action.json",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/07-a11y-retap1.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/07-a11y-retap1.png"
+      ],
+      "detail": "Node action on selected card2, 2→1"
+    },
+    {
+      "id": "partial_shuffle",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/07-a11y-retap1.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/08-shuffle-partial1.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/04-result-before.png",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/10-result-after-shuffle.png"
+      ],
+      "detail": "Selected first slot and Ten of Wands identity preserved; other result faces changed visually"
+    },
+    {
+      "id": "grid_02-picker-baseline",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/02-picker-baseline.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/02-picker-baseline.png"
+      ],
+      "detail": "All 78 positions present; image art inventory not tested"
+    },
+    {
+      "id": "grid_08-shuffle-partial1",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/08-shuffle-partial1.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/08-shuffle-partial1.png"
+      ],
+      "detail": "All 78 positions present; image art inventory not tested"
+    },
+    {
+      "id": "grid_14-one-picker0",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/14-one-picker0.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/14-one-picker0.png"
+      ],
+      "detail": "All 78 positions present; image art inventory not tested"
+    },
+    {
+      "id": "one_result",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/16-one-result.xml",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/16-one-result.png"
+      ],
+      "detail": "One-card overview and CTA visible; not a save/persistence test"
+    },
+    {
+      "id": "cta_nav_overlap",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/cta-bounds.json"
+      ],
+      "detail": "Visible clickable action bounds above nav; no assertion of an 8dp panel gap"
+    },
+    {
+      "id": "strict_log",
+      "result": "PASS",
+      "evidence": [
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/logcat-full.txt",
+        "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/logcat-strict.txt"
+      ],
+      "detail": "21:50:17–21:54:46 KST; not long-duration crash assurance"
+    }
+  ],
+  "verified_capture_metadata": [
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/01-current.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/02-picker-baseline.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/03-picker3.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/04-result-before.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/05-back3.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/06-raw-retap2.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/07-a11y-retap1.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/08-shuffle-partial1.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/09-shuffled-complete3.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/10-result-after-shuffle.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/11-restart-entry.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/12-category.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/13-one-entry.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/14-one-picker0.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/15-one-picker1.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/16-one-result.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/17-saju-current.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/18-saju-filled.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/19-saju-unknown-dark.json",
+    "/Volumes/뽀그리/Project 먕/샤로먕/evidence/final-fda7a483-pixel-qa-20260911/20-saju-unknown-light.json"
+  ],
+  "not_tested": [
+    "all spreads/devices/font scales",
+    "20-run endurance",
+    "record migration/deletion/save persistence",
+    "store/release signing",
+    "8dp action-panel gate"
+  ]
+}

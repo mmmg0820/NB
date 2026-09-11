@@ -4,17 +4,16 @@ HyperOS Design Standard 긴급 수정과 사주/타로 입력 및 결과 UX를 �
 
 ## APK
 
-- 파일: `releases/2026-09-11-r2/sharomyang-saju-metadata-r2-debug.apk`
-- SHA-256: `78277c5f3e1e031934469dcb10108988726c1e31caee52294b3df0d2f14041c2`
+- 파일: `releases/2026-09-11-r3/sharomyang-correction-r3-debug.apk`
+- SHA-256: `fda7a48369623256154bc39620b073df4fa28fd48ec1f263d191e912e2bba4ad`
 - 패키지: `com.hoscat.mtj.dev`
 - 버전: `0.1-dev` (`versionCode 1`)
 
 ## 검증
 
-- 클린 빌드 및 단위 테스트 94건 통과
-- Pixel 10 AVD, Android API 37, 1080x2424, fontScale 1.0
-- 설치된 base APK와 배포 APK SHA-256 일치
-- 상세 결과와 캡처: `evidence/saju-metadata-r2/`
+- 클린 빌드 및 단위 테스트 120건 통과
+- Pixel 9a 대상 사주 재생성, 타로 재탭·셔플·1장 결과 스모크 통과
+- 상세 결과: `evidence/correction-r3/REPORT.md`
 
 사주 결과의 계산 시각은 `계산 기준` 상세 팝업에서 한국어 날짜와 시간대로 표시합니다. 결과 화면의 `검토 필요` 상태와 시간 모름 처리는 유지됩니다.
 
@@ -37,4 +36,4 @@ HyperOS Design Standard 긴급 수정과 사주/타로 입력 및 결과 UX를 �
 - [문서 SHA 목록](docs/SHA256SUMS)과 [제출 원본/통합본 목록](docs/manifest.json)
 - [미완료 작업](docs/BACKLOG.md): A-01/T-05/R-01은 별도 Android/QA 승인 전까지 미완료
 
-앱 기준 커밋은 `b4ffe8718bf01b02930468451baa4ecab45f1db3`이다. 문서 통합 커밋은 APK를 다시 빌드하거나 앱 태그를 이동하지 않는다. 이전 R1 보고서와 manifest는 [이력 보관소](evidence/history/r1/README.md)에 원문 바이트로 보존한다.
+R3 앱 기준 커밋은 `fb8db44f768199e7d507624c716eac291ae97fdb`이다. 이전 R1 보고서와 manifest는 [이력 보관소](evidence/history/r1/README.md)에 원문 바이트로 보존한다.
