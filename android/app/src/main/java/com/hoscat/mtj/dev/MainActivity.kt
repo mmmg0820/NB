@@ -202,14 +202,8 @@ private fun MtjApp(
     MtjBottomActionScaffold(tab, { tab = it }, showActionDock = chart == null, actions = {
         if (tab == 1 && chart == null) Button(
             onClick = {
-                if (name.isBlank()) {
-                    aliasError = true
-                    scope.launch {
-                        aliasFocusRequester.requestFocus()
-                        aliasBringIntoViewRequester.bringIntoView()
-                    }
-                } else {
-                    aliasError = false
+                aliasError = false
+                run {
                     val submittedDate = validateBirthDateText(birthDate, today, if (lunar) CalendarType.Lunar else CalendarType.Solar)
                     val submittedTime = validateBirthTimeText(birthTime, unknown)
                     if (submittedDate.hasError || submittedTime.hasErrors) {
@@ -229,7 +223,9 @@ private fun MtjApp(
                         scope.launch {
                             try {
                                 evaluation = runtime.evaluate(BirthInputDraft(
-                                    name = name,
+                                    // 별칭은 선택 사항이다. 도메인 계층(BirthInputContract)은 빈 이름을
+                                    // 거부하므로, 비어 있을 때만 화면 표시용 대체 이름을 대신 넘긴다.
+                                    name = name.ifBlank { "회원" },
                                     year = submittedDate.year,
                                     month = submittedDate.month,
                                     day = submittedDate.day,

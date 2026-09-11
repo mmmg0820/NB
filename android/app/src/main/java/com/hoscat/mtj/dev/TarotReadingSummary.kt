@@ -62,7 +62,11 @@ private fun questionSummaryLine(question: String): String =
 @Composable
 internal fun TarotReadingSummaryPanel(lines: TarotReadingSummaryLines, modifier: Modifier = Modifier) {
     MtjQuietPanel(modifier) {
-        Text(lines.spreadLine, style = MaterialTheme.typography.titleLarge)
+        Text(
+            lines.spreadLine,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         Text(lines.questionLine, style = MaterialTheme.typography.bodyLarge)
     }
 }

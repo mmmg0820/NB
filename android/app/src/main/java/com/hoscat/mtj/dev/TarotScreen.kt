@@ -201,7 +201,6 @@ internal fun TarotScreen(
                         saveMessage?.let { message -> item { Text(message) } }
                         item {
                             MtjQuietPanel(Modifier.fillParentMaxWidth()) {
-                                Text("카드 배치", style = MaterialTheme.typography.titleLarge)
                                 TarotSpreadOverview(snapshot, Modifier.fillMaxWidth())
                             }
                         }
@@ -365,6 +364,17 @@ internal fun TarotScreen(
                     contentPadding = PaddingValues(top = 18.dp, bottom = 20.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
+                    if (selectedCategoryId != null) {
+                        item {
+                            TextButton(
+                                onClick = { selectedCategoryId = null },
+                                modifier = Modifier.heightIn(min = 48.dp),
+                            ) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                                Text("모양 다시 선택")
+                            }
+                        }
+                    }
                     item {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                             Text(
@@ -435,15 +445,6 @@ internal fun TarotScreen(
                         }
                     } else {
                         val selectedCategory = tarotSpreadCategories.first { it.id == selectedCategoryId }
-                        item {
-                            TextButton(
-                                onClick = { selectedCategoryId = null },
-                                modifier = Modifier.heightIn(min = 48.dp),
-                            ) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                                Text("모양 다시 선택")
-                            }
-                        }
                         items(
                             tarotOptionsForCategory(selectedCategory, normalSpreadOptions),
                             key = { it.key },
@@ -737,17 +738,14 @@ private fun TarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modifier 
         }
         val geometry = (secondPass as? SpreadGeometryResult.Success)?.geometry
         if (mode == TarotSpreadOverviewMode.Spatial && geometry != null) {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                SpatialTarotSpreadOverview(
-                    snapshot = snapshot,
-                    labels = labels,
-                    geometry = geometry,
-                    labelStyle = labelStyle,
-                    horizontalOffsetPx = ((availableWidthPx - geometry.canvasExtent.width) / 2f).coerceAtLeast(0f),
-                    modifier = Modifier.fillMaxWidth(),
-                )
-                TarotSpreadLegend(labels)
-            }
+            SpatialTarotSpreadOverview(
+                snapshot = snapshot,
+                labels = labels,
+                geometry = geometry,
+                labelStyle = labelStyle,
+                horizontalOffsetPx = ((availableWidthPx - geometry.canvasExtent.width) / 2f).coerceAtLeast(0f),
+                modifier = Modifier.fillMaxWidth(),
+            )
         } else {
             OrderedTarotSpreadOverview(snapshot, labels, Modifier.fillMaxWidth())
         }
@@ -805,6 +803,23 @@ private fun SpatialTarotSpreadOverview(
                     )
                 }
             }
+            Text(
+                labels[index].positionLine,
+                style = labelStyle,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .offset {
+                        IntOffset(
+                            (placement.labelBounds.left + horizontalOffsetPx).roundToInt(),
+                            placement.labelBounds.top.roundToInt(),
+                        )
+                    }
+                    .width(with(density) { placement.labelBounds.width.toDp() })
+                    .clearAndSetSemantics { },
+            )
         }
         if (celticCenterPair) {
             val badgeSizePx = with(density) { 20.dp.toPx() }
@@ -828,20 +843,6 @@ private fun SpatialTarotSpreadOverview(
                         .clearAndSetSemantics { },
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun TarotSpreadLegend(labels: List<TarotSpreadOverviewLabel>) {
-    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-        labels.forEach { label ->
-            Text(
-                label.positionLine,
-                modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }
