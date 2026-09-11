@@ -18,7 +18,7 @@ internal object RecordSnapshots {
         return listOf(
             Envelope(profile, Kind.PROFILE, Value.Obj(mapOf("input" to tree(result.input))), snapshotAtEpochMillis = time),
             Envelope(origin(), Kind.SAJU, Value.Obj(mapOf(
-                "title" to Value.Str("${result.chart.name}님의 명식"),
+                "title" to Value.Str(sajuReadingTitle(result.chart)),
                 "summary" to Value.Str(result.chart.summary),
                 "chart" to tree(result.chart), "input" to tree(result.input),
             )), listOf(profile), snapshotAtEpochMillis = time),
@@ -39,6 +39,9 @@ internal object RecordSnapshots {
         )), snapshotAtEpochMillis = System.currentTimeMillis(),
     )
 }
+
+internal fun sajuReadingTitle(chart: com.hoscat.core.model.SajuChart): String =
+    "${chart.monthPillar.branch}월${chart.dayPillar.stem}${chart.dayPillar.branch}"
 
 internal fun Envelope.displayText(key: String): String =
     (payload.fields[key] as? Value.Str)?.text ?: ""

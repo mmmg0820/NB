@@ -15,6 +15,18 @@ class SpreadGeometryTest {
         labelToLabel = 4f,
     )
 
+    @Test fun wheelOfFortuneUsesClockwiseRadialPlacements() {
+        val spread = spreadOptions.single { it.layoutId == "wheel_of_fortune" }
+        val slots = spreadSlots(spread, spread.cardCount)
+
+        assertEquals(8, slots.size)
+        assertEquals(listOf(0f, 45f, 90f, 135f, 180f, -135f, -90f, -45f), slots.map { it.rotation })
+        assertEquals(slots[0].x, slots[4].x, 0f)
+        assertEquals(slots[2].y, slots[6].y, 0f)
+        assertEquals(slots[1].x + slots[5].x, 3f, 0.001f)
+        assertEquals(slots[1].y + slots[5].y, 3f, 0.001f)
+    }
+
     @Test fun everyNormalSpreadIsSafeAtPhoneAndTabletWidths() {
         val normalSpreads = spreadOptions.filter { it.drawMode == SpreadDrawMode.Normal }
         assertTrue(normalSpreads.isNotEmpty())

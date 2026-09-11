@@ -62,10 +62,10 @@ internal data class SajuPillarDisplay(
 }
 
 internal fun sajuChartPillarDisplays(chart: SajuChart): List<SajuPillarDisplay> = listOf(
-    SajuPillarDisplay("연주", chart.yearPillar),
-    SajuPillarDisplay("월주", chart.monthPillar),
-    SajuPillarDisplay("일주", chart.dayPillar, isDayMaster = true),
     SajuPillarDisplay("시주", chart.hourPillar, isUnknownHour = chart.hourPillar == null),
+    SajuPillarDisplay("일주", chart.dayPillar, isDayMaster = true),
+    SajuPillarDisplay("월주", chart.monthPillar),
+    SajuPillarDisplay("연주", chart.yearPillar),
 )
 
 internal fun sajuPillarColumnCount(
@@ -141,7 +141,7 @@ internal fun SajuChartDisplay(chart: SajuChart, modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.Top,
         ) {
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text("명식", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Text(sajuReadingTitle(chart), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
                 Text(
                     "${chart.name}님",
                     style = MaterialTheme.typography.bodySmall,

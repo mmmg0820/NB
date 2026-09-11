@@ -93,14 +93,14 @@ internal fun spreadSlots(spread: SpreadOption, count: Int): List<SpreadSlot> {
     }
     if (spread.layoutId == "wheel_of_fortune" && count >= 8) {
         return listOf(
-            SpreadSlot(1.5f, 0f),
-            SpreadSlot(2.6f, 0.45f),
-            SpreadSlot(3f, 1.5f),
-            SpreadSlot(2.6f, 2.55f),
-            SpreadSlot(1.5f, 3f),
-            SpreadSlot(0.4f, 2.55f),
-            SpreadSlot(0f, 1.5f),
-            SpreadSlot(0.4f, 0.45f)
+            SpreadSlot(1.5f, 0f, 0f),
+            SpreadSlot(2.6f, 0.45f, 45f),
+            SpreadSlot(3f, 1.5f, 90f),
+            SpreadSlot(2.6f, 2.55f, 135f),
+            SpreadSlot(1.5f, 3f, 180f),
+            SpreadSlot(0.4f, 2.55f, -135f),
+            SpreadSlot(0f, 1.5f, -90f),
+            SpreadSlot(0.4f, 0.45f, -45f)
         )
     }
     if (spread.layoutId == "crow_seven" && count >= 7) {

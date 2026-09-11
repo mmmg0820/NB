@@ -11,17 +11,17 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SajuChartDisplayTest {
-    @Test fun chartOrderMatchesYearMonthDayHourContract() {
+    @Test fun chartOrderMatchesTraditionalRightToLeftReadingContract() {
         val displays = sajuChartPillarDisplays(chart())
 
-        assertEquals(listOf("연주", "월주", "일주", "시주"), displays.map { it.role })
-        assertEquals(listOf("갑", "병", "무", "경"), displays.map { it.pillar?.stem })
+        assertEquals(listOf("시주", "일주", "월주", "연주"), displays.map { it.role })
+        assertEquals(listOf("경", "무", "병", "갑"), displays.map { it.pillar?.stem })
     }
 
     @Test fun dayStemIsTheOnlyDayMasterTile() {
         val displays = sajuChartPillarDisplays(chart())
 
-        assertEquals(listOf(false, false, true, false), displays.map { it.isDayMaster })
+        assertEquals(listOf(false, true, false, false), displays.map { it.isDayMaster })
         assertEquals("戊 무", displays.single { it.isDayMaster }.stemText)
     }
 

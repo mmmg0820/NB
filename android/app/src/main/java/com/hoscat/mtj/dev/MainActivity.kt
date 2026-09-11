@@ -104,9 +104,20 @@ private fun MtjApp(
     val store = remember { RecordStore(context) }
     val saveBatch = remember(evaluation) { (evaluation as? MtjSajuEvaluation.Accepted)?.let(RecordSnapshots::saju) }
     var saveMessage by remember(evaluation) { mutableStateOf<String?>(null) }
-    var saving by remember { mutableStateOf(false) }
+    var exportingSajuImage by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val chart = (evaluation as? MtjSajuEvaluation.Accepted)?.chart
+    LaunchedEffect(saveBatch?.lastOrNull()?.origin?.commonId) {
+        val batch = saveBatch ?: return@LaunchedEffect
+        try {
+            store.insert(batch)
+            saveMessage = "기록에 자동 저장했습니다."
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            saveMessage = "자동 저장하지 못했습니다. 정보를 다시 확인해주세요."
+        }
+    }
     val today = remember { LocalDate.now(ZoneId.of(KOREA_STANDARD_TIME_ZONE_ID)) }
     val dateValidation = remember(birthDate, lunar, today, showBirthInputErrors) {
         if (showBirthInputErrors) {
@@ -410,24 +421,24 @@ private fun MtjApp(
                             ) { Text("정보 수정") }
                             TextButton(
                                 onClick = {
-                                    val batch = saveBatch ?: return@TextButton
-                                    saving = true
+                                    val currentChart = chart ?: return@TextButton
+                                    exportingSajuImage = true
                                     scope.launch {
                                         try {
-                                            store.insert(batch)
-                                            saveMessage = "기록에 저장했습니다."
+                                            SajuImageExporter.save(context, currentChart)
+                                            saveMessage = "사진으로 저장했습니다."
                                         } catch (e: kotlinx.coroutines.CancellationException) {
                                             throw e
                                         } catch (_: Exception) {
-                                            saveMessage = "저장하지 못했습니다. 다시 시도해주세요."
+                                            saveMessage = "사진을 저장하지 못했습니다. 다시 시도해주세요."
                                         } finally {
-                                            saving = false
+                                            exportingSajuImage = false
                                         }
                                     }
                                 },
-                                enabled = !saving,
+                                enabled = !exportingSajuImage,
                                 modifier = Modifier.weight(1f).heightIn(min = 48.dp),
-                            ) { Text(if (saving) "저장 중" else "명식 저장") }
+                            ) { Text(if (exportingSajuImage) "사진 저장 중" else "사진으로 저장") }
                         }
                         saveMessage?.let { Text(it) }
                     }

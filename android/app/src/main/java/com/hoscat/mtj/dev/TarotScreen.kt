@@ -72,8 +72,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.ceil
+import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.math.sin
 
 /**
  * The question is optional in the UI (validateTarotQuestion no longer requires it), but
@@ -115,7 +117,7 @@ internal fun TarotScreen(
     val result = restored?.result
     val saveRecord = restored?.record
     var saveMessage by remember(result) { mutableStateOf<String?>(null) }
-    var saving by remember { mutableStateOf(false) }
+    var exportingImage by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val normalSpreadOptions = remember {
         selectableSpreadOptions.filter { it.drawMode == SpreadDrawMode.Normal }
@@ -148,6 +150,25 @@ internal fun TarotScreen(
     BackHandler(enabled = result != null) {
         session = session.reopenSelection()
     }
+    val snackbarHostState = remember { SnackbarHostState() }
+    LaunchedEffect(saveRecord?.origin?.commonId) {
+        val record = saveRecord ?: return@LaunchedEffect
+        try {
+            store.insert(listOf(record))
+            saveMessage = "기록에 자동 저장했습니다."
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (_: Exception) {
+            saveMessage = "자동 저장하지 못했습니다. 다시 결과를 열어주세요."
+        }
+    }
+    LaunchedEffect(saveMessage) {
+        saveMessage?.let {
+            snackbarHostState.showSnackbar(it)
+            saveMessage = null
+        }
+    }
+    Box(Modifier.fillMaxSize()) {
     MtjBottomActionScaffold(
         selectedTab = 2,
         onTabSelected = onTabSelected,
@@ -159,16 +180,24 @@ internal fun TarotScreen(
         } else if (result != null) {
             OutlinedButton({ restart() }, Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text("새로 뽑기") }
             Spacer(Modifier.height(8.dp))
-            Button({
-                val record = saveRecord ?: return@Button
-                saving = true
+            OutlinedButton({
+                val snapshot = result ?: return@OutlinedButton
+                exportingImage = true
                 scope.launch {
-                    try { store.insert(listOf(record)); saveMessage = "기록에 저장했습니다." }
-                    catch (e: kotlinx.coroutines.CancellationException) { throw e }
-                    catch (_: Exception) { saveMessage = "저장하지 못했습니다. 다시 시도해주세요." }
-                    finally { saving = false }
+                    try {
+                        TarotImageExporter.save(context, snapshot)
+                        saveMessage = "사진으로 저장했습니다."
+                    } catch (e: kotlinx.coroutines.CancellationException) {
+                        throw e
+                    } catch (_: Exception) {
+                        saveMessage = "사진을 저장하지 못했습니다. 다시 시도해주세요."
+                    } finally {
+                        exportingImage = false
+                    }
                 }
-            }, enabled = !saving, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) { Text(if (saving) "저장 중" else "저장") }
+            }, enabled = !exportingImage, modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)) {
+                Text(if (exportingImage) "사진 저장 중" else "사진으로 저장")
+            }
         }
     }) { padding ->
         Column(Modifier.fillMaxSize().padding(padding), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -208,7 +237,6 @@ internal fun TarotScreen(
                         item {
                             TarotReadingSummaryPanel(tarotReadingSummaryLines(snapshot))
                         }
-                        saveMessage?.let { message -> item { Text(message) } }
                         item {
                             MtjQuietPanel(Modifier.fillParentMaxWidth()) {
                                 TarotSpreadOverview(snapshot, Modifier.fillMaxWidth())
@@ -314,12 +342,30 @@ internal fun TarotScreen(
                         Box(Modifier.fillMaxWidth().height(56.dp)) {
                             if (selected.size == currentSpread.cardCount) {
                                 var drawerDrag by remember { mutableFloatStateOf(0f) }
+                                val drawerReduceMotion = remember { readReduceMotionDefault(context) }
+                                var drawerRevealed by remember { mutableStateOf(drawerReduceMotion) }
+                                LaunchedEffect(Unit) { drawerRevealed = true }
+                                val drawerReveal by animateFloatAsState(
+                                    targetValue = if (drawerRevealed) 1f else 0f,
+                                    animationSpec = tween(
+                                        durationMillis = if (drawerReduceMotion) {
+                                            MtjTokens.ReducedMotionMillis
+                                        } else {
+                                            MtjTokens.GatherMillis + MtjTokens.SpreadMillis + MtjTokens.SettleMillis
+                                        },
+                                    ),
+                                    label = "tarot-drawer-reveal",
+                                )
                                 val swipeThreshold = with(LocalDensity.current) { 24.dp.toPx() }
                                 val openResult = { session = session.finish(checkNotNull(deck)) }
                                 Surface(
                                     onClick = openResult,
                                     modifier = Modifier
                                         .fillMaxSize()
+                                        .graphicsLayer {
+                                            translationY = (1f - drawerReveal) * size.height
+                                            alpha = drawerReveal
+                                        }
                                         .pointerInput(session.selectedIds) {
                                             detectVerticalDragGestures(
                                                 onDragStart = { drawerDrag = 0f },
@@ -493,6 +539,14 @@ internal fun TarotScreen(
             }
         }
     }
+        SnackbarHost(
+            snackbarHostState,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .windowInsetsPadding(WindowInsets.navigationBars)
+                .padding(16.dp),
+        )
+    }
 }
 
 @Composable
@@ -654,6 +708,10 @@ private fun TarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modifier 
         }
         .toFloat()
     BoxWithConstraints(modifier) {
+        if (snapshot.spread.layoutId == "wheel_of_fortune" && cards.size == 8) {
+            WheelTarotSpreadOverview(snapshot, Modifier.fillMaxWidth())
+            return@BoxWithConstraints
+        }
         val availableWidthPx = constraints.maxWidth.toFloat()
         val gaps = with(density) {
             SpreadGeometryGaps(
@@ -753,6 +811,55 @@ private fun TarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modifier 
         } else {
             OrderedTarotSpreadOverview(snapshot, labels, Modifier.fillMaxWidth())
         }
+    }
+}
+
+@Composable
+private fun WheelTarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modifier = Modifier) {
+    val density = LocalDensity.current
+    BoxWithConstraints(
+        modifier
+            .aspectRatio(1f)
+            .clearAndSetSemantics {
+                contentDescription = snapshot.reading.cards.joinToString(", ") { card ->
+                    "${card.order}번 ${card.positionLabel}, ${card.nameKr}, ${card.directionLabel}"
+                }
+            },
+    ) {
+        val cardWidth = 46.dp
+        val cardHeight = cardWidth / TAROT_CARD_ASPECT_RATIO
+        val cardWidthPx = with(density) { cardWidth.toPx() }
+        val cardHeightPx = with(density) { cardHeight.toPx() }
+        val radius = (constraints.maxWidth - cardHeightPx) * 0.42f
+        val centerX = constraints.maxWidth / 2f
+        val centerY = constraints.maxHeight / 2f
+        snapshot.reading.cards.forEachIndexed { index, card ->
+            val angle = Math.toRadians((-90.0 + index * 45.0))
+            val rotation = combinedTarotCardRotation(index * 45f, card.directionLabel)
+            Box(
+                Modifier
+                    .offset {
+                        IntOffset(
+                            (centerX + cos(angle).toFloat() * radius - cardWidthPx / 2f).roundToInt(),
+                            (centerY + sin(angle).toFloat() * radius - cardHeightPx / 2f).roundToInt(),
+                        )
+                    }
+                    .size(cardWidth, cardHeight)
+                    .graphicsLayer { rotationZ = rotation }
+                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(MtjTokens.TarotFrameCorner))
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(MtjTokens.TarotFrameCorner)),
+            ) {
+                TarotArt(card.cardId, card.nameKr, Modifier.fillMaxSize().padding(2.dp), fixedBounds = true)
+                TarotSpreadNumberBadge(card.order, Modifier.align(Alignment.TopStart).size(18.dp))
+            }
+        }
+        Text(
+            "운명의\n수레바퀴",
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.align(Alignment.Center),
+        )
     }
 }
 
