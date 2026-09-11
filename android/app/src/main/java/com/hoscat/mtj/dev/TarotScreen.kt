@@ -549,9 +549,9 @@ private fun TarotDeckCardChoice(
                     enabled = canSelect,
                     role = Role.Button,
                     onClickLabel = if (selectedIndex >= 0) "선택 취소" else "카드 선택",
-                    onClick = { onCardTapped(card) },
+                    onClick = { if (canSelect) onCardTapped(card) },
                 )
-                .tarotCardChoiceSemantics(position, selectedIndex, canSelect) { onCardTapped(card) },
+                .tarotCardChoiceSemantics(position, selectedIndex, canSelect),
         ) {
             BoxWithConstraints(Modifier.fillMaxSize().padding(1.dp), contentAlignment = Alignment.Center) {
                 val cardWidth = minOf(maxWidth, maxHeight * TAROT_CARD_ASPECT_RATIO)

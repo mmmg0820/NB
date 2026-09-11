@@ -1,12 +1,9 @@
 package com.hoscat.mtj.dev
 
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.disabled
-import androidx.compose.ui.semantics.onClick
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.stateDescription
 
@@ -14,10 +11,8 @@ internal fun Modifier.tarotCardChoiceSemantics(
     position: Int,
     selectedIndex: Int,
     canSelect: Boolean,
-    onCardTapped: () -> Unit,
 ): Modifier = clearAndSetSemantics {
-    // Keep the card name and action on one node even when its ordinal badge is present.
-    role = Role.Button
+    // Apply after clickable: retain its sole action and clear only descendant semantics.
     contentDescription = "카드 ${position + 1}"
     selected = selectedIndex >= 0
     stateDescription = when {
@@ -26,8 +21,4 @@ internal fun Modifier.tarotCardChoiceSemantics(
         else -> "선택 안 됨"
     }
     if (!canSelect) disabled()
-    onClick(label = if (selectedIndex >= 0) "선택 취소" else "카드 선택") {
-        if (canSelect) onCardTapped()
-        canSelect
-    }
 }
