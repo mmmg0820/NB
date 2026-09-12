@@ -1,10 +1,17 @@
 package com.hoscat.mtj.dev
 
+import androidx.compose.ui.graphics.luminance
+import com.mtj.design.MtjTokens
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class TarotSelectionGridContractTest {
+    @Test fun selectedNumberRemainsLegibleOnItsOpaqueBadge() {
+        val contrast = (MtjTokens.Surface.luminance() + 0.05f) / (MtjTokens.Primary.luminance() + 0.05f)
+        assertTrue("Selected number contrast was $contrast", contrast >= 4.5f)
+    }
+
     @Test fun all78CardsUseEightColumnsAndTenRows() {
         val compact = tarotOverviewGridSpec(360f, 420f)
         val wide = tarotOverviewGridSpec(600f, 420f)

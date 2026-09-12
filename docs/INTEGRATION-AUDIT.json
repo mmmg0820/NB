@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "task": "O-01 and 13-team documentation integration",
+  "baselineCodeCommit": "b4ffe8718bf01b02930468451baa4ecab45f1db3",
+  "teamDocumentCount": 13,
+  "relativeMarkdownLinksChecked": 45,
+  "missingLinks": [],
+  "currentArtifactHashVerified": true,
+  "currentSourceHashesVerified": true,
+  "r1History": [
+    {
+      "path": "evidence/history/r1/REPORT.md",
+      "sha256": "a02960da79967ae4fcc06a2134932d2addbe68eb23a4611afef1a98eb3780369",
+      "originalGitPath": "evidence/REPORT.md",
+      "byteIdentical": true
+    },
+    {
+      "path": "evidence/history/r1/release-manifest.json",
+      "sha256": "54c641b64fc887624763a1b191f06c6c596d96d2abef1cb98859ec7db0a844cf",
+      "originalGitPath": "evidence/release-manifest.json",
+      "byteIdentical": true
+    }
+  ],
+  "secretLiteralMatches": [],
+  "codeChangesIncluded": false,
+  "apkChangesIncluded": false,
+  "pendingCodeWork": [
+    "A-01",
+    "T-05",
+    "R-01"
+  ],
+  "assetCheckScope": "New changes contain Markdown/JSON/SHA text only; no new image/APK. Existing R2 exact gated-asset exclusion result retained; no derivative-rights certification.",
+  "historyPolicy": "Existing tags/commits/APKs preserved; R1 reports archived byte-for-byte."
+}

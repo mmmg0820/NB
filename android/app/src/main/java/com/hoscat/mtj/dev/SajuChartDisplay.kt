@@ -84,6 +84,14 @@ internal enum class SajuPillarGridMode { Standard, Compact }
 internal fun sajuPillarGridMode(maxWidth: Dp, fontScale: Float): SajuPillarGridMode =
     if (maxWidth < 360.dp || fontScale >= 1.3f) SajuPillarGridMode.Compact else SajuPillarGridMode.Standard
 
+internal fun sajuPillarCellWeight(display: SajuPillarDisplay, mode: SajuPillarGridMode): Float =
+    if (display.isUnknownHour && mode == SajuPillarGridMode.Standard) 1.35f else 1f
+
+internal fun sajuPillarFooterText(display: SajuPillarDisplay, mode: SajuPillarGridMode): String? =
+    display.elementText.takeIf {
+        !display.isUnknownHour && (mode == SajuPillarGridMode.Standard || display.isDayMaster)
+    }
+
 internal fun sajuChartAuthorityLabel(chart: SajuChart): String =
     verificationStateLabel(chart.evidence.trustLevel.name, chart.evidence.isVerified)
 

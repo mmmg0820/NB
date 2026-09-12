@@ -1,47 +1,20 @@
-# Sharomyang HyperOS Final Integration
+# 현재 배포 근거: R3 통합 개발판
 
-## Build
+이 경로는 현재 권장 개발 APK를 안내한다. 기본값은 R3이며 R2와 R1은 이력이다.
 
-- Clean offline build: PASS
-- Unit tests: 92 PASS
-- APK: `sharomyang-hyperos-final-debug.apk`
-- APK SHA-256: `89d40ac05d74988c0d6e348b60199e91bd57b8e4800c3c6a81fc94d752ef2a7c`
-- Package: `com.hoscat.mtj.dev`
-- Version: `1` / `0.1-dev`
-- Signing certificate SHA-256: `c0cdb6586cafab0ae49a721e27a7a9da5543bc672d474fd5303561c10550d3ab`
+- 앱 코드 커밋: `fb8db44f768199e7d507624c716eac291ae97fdb`
+- 태그: 없음
+- [APK](../releases/2026-09-11-r3/sharomyang-correction-r3-debug.apk)
+- APK SHA-256: `fda7a48369623256154bc39620b073df4fa28fd48ec1f263d191e912e2bba4ad`
+- [현재 manifest](release-manifest.json): 모든 파일 경로는 저장소 루트 기준
+- [R3 상세 보고서](correction-r3/REPORT.md), [R2 상세 보고서](saju-metadata-r2/REPORT.md), [QA 인수인계](../docs/qa/README.md)
 
-## Implemented
+R3는 승인된 사주 시간 미상, 기록 필터·상태, 타로 선택 접근성 및 결과 반응형 수정을 통합했다. 기기 스모크에서 발견된 사주 재생성 및 타로 재탭 회귀도 수정했다. 클린 빌드와 단위 테스트 120건이 통과했다.
 
-- HyperOS Design Standard light/dark contrast, semantic tokens, one bottom navigation, and launcher icon resources.
-- One-field `YYYYMMDD` and one-field `HHmm` input with `BirthInputDraft` mapping and updated Korean validation copy.
-- Saju result order: 명식, 일간, 연주, 월주, 일주, 시주. Unknown time is explicit and does not fabricate an hour pillar.
-- Internal `policyCode` and `dataVersion` remain limited to the information destination.
-- Shared Home/Tarot question, 8 spread-shape categories covering 27 readings, and actual spread previews.
-- 78-card fixed 8x10 picker, direct select/deselect, no picker bottom navigation, manual result drawer, and Back restoration.
-- Record filters: 전체, 사주, 타로.
+Pixel 9a에서 동일 APK 해시로 사주 시간 미상 테마 재생성, 타로 원시 탭·접근성 재탭, 셔플 보존 및 1장 결과를 검증했다. 이 산출물은 debug 검수본이며 전체 제품·스토어 출시 인증이 아니다.
 
-## Pixel 10 Evidence
+## 보존된 이전 이력
 
-- Light Home: `pixel10-home-light.png`
-- Saju input: `pixel10-saju-input.png`
-- Unknown-time Saju result: `pixel10-saju-unknown-result.png`
-- Dark Saju/input state: `pixel10-saju-unknown-result-dark.png`
-- Dark Tarot categories: `pixel10-tarot-categories-dark.png`
-- Dark 78-card picker: `pixel10-tarot-picker-dark.png`
-- Select/deselect state: `pixel10-tarot-picked.xml`, `pixel10-tarot-unpicked.xml`
-- Completed picker drawer: `pixel10-tarot-complete-peek-dark.png`
-- Three-card picker: `pixel10-tarot-picker-0of3-dark.png`, `pixel10-tarot-picker-3of3-dark.png`
-- Same-card deselection closes the drawer: `pixel10-tarot-picker-2of3-after-retap-dark.png`
-- Tarot result and Back restoration: `pixel10-tarot-result-dark.png`, `pixel10-tarot-back-restored.xml`
-- Record filters: `pixel10-records-filters-dark.png`
-- Runtime/install identity: `pixel10-runtime-metadata.txt`
-- Clean-launch logcat: `pixel10-launch-logcat.txt`, `pixel10-logcat-summary.txt`
+[R1 원문 manifest와 보고서](history/r1/README.md)는 기존 루트 파일과 바이트가 같다. R1 문서의 당시 PASS 표기는 이후 독립 QA의 `FINAL_FAIL/HOLD`를 뒤집지 않는다. R1 APK와 태그는 삭제하거나 이동하지 않는다.
 
-## Source Freeze
-
-- Snapshot: `source-snapshot.tar.gz`
-- Snapshot SHA-256: `61829673c1b1b13a2711f30ff18e66caf4ac1333acd3cb01f21c7f458e48c967`
-- Source manifest: `source-manifest.sha256`
-- Source manifest SHA-256: `c9ef839d3e082f98d5df0a7d44e650f6997ae4848310c1097d037589e5830485`
-- Build log: `build-test.log`
-- Changed file inventory: `changed-files.txt`
+R2 태그와 APK는 이력 보존용으로 유지한다.

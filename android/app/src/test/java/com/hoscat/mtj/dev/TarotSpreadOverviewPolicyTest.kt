@@ -248,14 +248,32 @@ class TarotSpreadOverviewPolicyTest {
     }
 
     @Test fun singleCardGeometryWidthIsCappedOnlyWhenOversized() {
-        assertEquals(180f, effectiveTarotSpreadGeometryWidth(320f, 1, 319f, 180f), 0f)
-        assertEquals(160f, effectiveTarotSpreadGeometryWidth(160f, 1, 159f, 180f), 0f)
-        assertEquals(320f, effectiveTarotSpreadGeometryWidth(320f, 1, 170f, 180f), 0f)
+        assertEquals(112f, effectiveTarotSpreadGeometryWidth(320f, 1, 319f, 112f, 420f), 0f)
+        assertEquals(100f, effectiveTarotSpreadGeometryWidth(100f, 1, 99f, 112f, 420f), 0f)
+        assertEquals(320f, effectiveTarotSpreadGeometryWidth(320f, 1, 110f, 112f, 420f), 0f)
     }
 
-    @Test fun multiCardGeometryKeepsFullAvailableWidth() {
-        assertEquals(320f, effectiveTarotSpreadGeometryWidth(320f, 3, 96f, 180f), 0f)
-        assertEquals(840f, effectiveTarotSpreadGeometryWidth(840f, 10, 140f, 180f), 0f)
+    @Test fun twoAndThreeCardResultsFitNarrowScreensAndCapWideScreens() {
+        for (cardCount in 2..3) {
+            assertEquals(320f, effectiveTarotSpreadGeometryWidth(320f, cardCount, 96f, 112f, 420f), 0f)
+            assertEquals(420f, effectiveTarotSpreadGeometryWidth(420f, cardCount, 130f, 112f, 420f), 0f)
+            assertEquals(420f, effectiveTarotSpreadGeometryWidth(840f, cardCount, 260f, 112f, 420f), 0f)
+        }
+    }
+
+    @Test fun fourAndMoreCardResultsKeepFullAvailableWidth() {
+        for (cardCount in listOf(4, 5, 7, 10, 12)) {
+            assertEquals(320f, effectiveTarotSpreadGeometryWidth(320f, cardCount, 60f, 112f, 420f), 0f)
+            assertEquals(840f, effectiveTarotSpreadGeometryWidth(840f, cardCount, 140f, 112f, 420f), 0f)
+        }
+    }
+
+    @Test fun invalidAdaptiveWidthInputsLeaveAvailableWidthUnchanged() {
+        assertEquals(840f, effectiveTarotSpreadGeometryWidth(840f, 0, 140f, 112f, 420f), 0f)
+        assertEquals(840f, effectiveTarotSpreadGeometryWidth(840f, 1, Float.NaN, 112f, 420f), 0f)
+        assertEquals(840f, effectiveTarotSpreadGeometryWidth(840f, 1, 140f, 0f, 420f), 0f)
+        assertEquals(840f, effectiveTarotSpreadGeometryWidth(840f, 3, 140f, 112f, Float.POSITIVE_INFINITY), 0f)
+        assertEquals(0f, effectiveTarotSpreadGeometryWidth(0f, 3, 140f, 112f, 420f), 0f)
     }
 
     private fun readyGeometry(

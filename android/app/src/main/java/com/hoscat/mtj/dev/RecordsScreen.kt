@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,14 +37,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.dp
 import com.mtj.design.MtjBottomActionScaffold
 import com.mtj.design.MtjEmptyState
 import com.mtj.design.MtjSectionHeader
-import com.mtj.design.MtjTokens
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -64,7 +68,9 @@ internal fun RecordsScreen(
     var selectedId by rememberSaveable { mutableStateOf(initialSelectedId) }
     var selectedFilter by rememberSaveable { mutableStateOf(RecordFilter.ALL) }
     val selected = records?.firstOrNull { it.origin.commonId == selectedId }
+    val tarotSummary = selected?.tarotResultSummary()
     var error by remember { mutableStateOf<String?>(null) }
+    var loading by remember { mutableStateOf(true) }
     var refresh by remember { mutableIntStateOf(0) }
     var confirm by remember { mutableStateOf(false) }
     var deleting by remember { mutableStateOf(false) }
@@ -74,6 +80,7 @@ internal fun RecordsScreen(
         if (initialSelectedId != null) selectedId = initialSelectedId
     }
     LaunchedEffect(refresh) {
+        loading = true
         error = null
         try {
             val loaded = store.list()
@@ -88,6 +95,8 @@ internal fun RecordsScreen(
             throw cancelled
         } catch (_: Exception) {
             error = "기록을 읽지 못했습니다. 원본 데이터는 유지됩니다."
+        } finally {
+            loading = false
         }
     }
 
@@ -109,30 +118,43 @@ internal fun RecordsScreen(
                 if (selected == null) {
                     MtjSectionHeader("기록")
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp).selectableGroup(),
                     ) {
                         RecordFilter.entries.forEach { filter ->
-                            val selected = selectedFilter == filter
-                            FilterChip(
-                                selected = selected,
+                            val active = selectedFilter == filter
+                            val indicatorColor = MaterialTheme.colorScheme.primary
+                            TextButton(
                                 onClick = { selectedFilter = filter },
-                                label = { Text(filter.label) },
-                                modifier = Modifier.heightIn(min = 48.dp).semantics {
-                                    stateDescription = if (selected) "선택됨" else "선택 안 됨"
-                                },
-                            )
+                                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 12.dp),
+                                modifier = Modifier.weight(1f).heightIn(min = 48.dp)
+                                    .testTag("records-filter-${filter.name.lowercase(Locale.ROOT)}")
+                                    .semantics { role = Role.Tab; this.selected = active }
+                                    .drawBehind {
+                                        if (active) {
+                                            val stroke = 2.dp.toPx()
+                                            drawLine(indicatorColor, Offset(0f, size.height - stroke / 2), Offset(size.width, size.height - stroke / 2), stroke)
+                                        }
+                                    },
+                            ) {
+                                Text(filter.label, color = if (active) indicatorColor else MaterialTheme.colorScheme.onSurfaceVariant)
+                            }
                         }
                     }
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    if (selectedFilter == RecordFilter.SAVED) {
+                        Column(Modifier.padding(top = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                            MtjSectionHeader("저장한 기록")
+                            Text("이 앱에서 저장한 명식과 타로 리딩", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
                 } else {
                     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         TextButton(onClick = { selectedId = null }, modifier = Modifier.heightIn(min = 48.dp)) {
                             Text("목록으로")
                         }
-                        MtjSectionHeader(if (selected.kind == Kind.TAROT) "저장한 리딩" else selected.displayText("title"))
+                        if (tarotSummary == null) MtjSectionHeader(selected.displayText("title"))
                         Text(
-                            if (selected.kind == Kind.SAJU) "사주 기록" else "타로 기록",
+                            "${recordsKindLabel(selected.kind)} · 저장된 결과",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.secondary,
                         )
@@ -141,37 +163,37 @@ internal fun RecordsScreen(
             }
             error?.let { message ->
                 item {
-                    Column(Modifier.padding(vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Column(Modifier.fillMaxWidth().padding(vertical = 16.dp).testTag("records-error"), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(message, color = MaterialTheme.colorScheme.error)
                         TextButton(onClick = { refresh++ }, modifier = Modifier.heightIn(min = 48.dp)) { Text("다시 시도") }
                     }
                 }
             }
+            if (loading) {
+                item {
+                    Text(
+                        "기록을 불러오는 중",
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp).testTag("records-loading"),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
             val detail = selected
             if (detail != null) {
-                val tarotSummary = if (detail.kind == Kind.TAROT) tarotReadingSummaryLines(detail.payload) else null
-                if (tarotSummary != null) {
-                    item {
-                        TarotReadingSummaryPanel(tarotSummary, Modifier.padding(vertical = 12.dp))
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    }
-                } else {
-                    item {
-                        Text(
-                            detail.displayText("summary"),
-                            modifier = Modifier.padding(vertical = 16.dp),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                    }
+                tarotSummary?.let { summary ->
+                    item { TarotResultSummaryPanel(summary) }
                 }
-                // 스프레드/질문은 위 요약 패널로 통합되었으니 상세 행에서는 중복 표시하지 않는다.
-                val rows = if (tarotSummary != null) {
-                    detail.detailRows().filterNot { it.label == "스프레드" || it.label == "질문" }
-                } else {
-                    detail.detailRows()
+                item {
+                    Text(
+                        detail.displayText("summary"),
+                        modifier = Modifier.padding(vertical = 16.dp),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 }
-                items(rows) { row ->
+                items(detail.detailRows().filterNot { row ->
+                    tarotSummary != null && row.label in setOf("스프레드", "질문")
+                }) { row ->
                     Column(
                         Modifier.fillMaxWidth().padding(vertical = 14.dp),
                         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -181,29 +203,18 @@ internal fun RecordsScreen(
                     }
                     HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 }
-            } else if (records == null && error == null) {
-                item {
-                    Box(Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
-                }
-            } else if (records?.isEmpty() == true && error == null) {
-                item {
-                    MtjEmptyState(
-                        title = "아직 저장된 기록이 없습니다.",
-                        body = "사주 명식과 타로 결과를 저장하면 이곳에서 이어볼 수 있습니다.",
-                        modifier = Modifier.padding(top = 24.dp),
-                    )
-                }
             } else {
                 val filteredRecords = records.orEmpty().filter(selectedFilter::accepts)
-                if (filteredRecords.isEmpty()) {
+                if (filteredRecords.isEmpty() && !loading && error == null) {
                     item {
-                        MtjEmptyState(
-                            title = "해당하는 기록이 없습니다.",
-                            body = "다른 종류를 선택하거나 새 기록을 저장해 주세요.",
-                            modifier = Modifier.padding(top = 24.dp),
-                        )
+                        val empty = selectedFilter.emptyState()
+                        Column(Modifier.fillMaxWidth().padding(top = 24.dp).testTag("records-empty")) {
+                            MtjEmptyState(title = empty.title, body = empty.body)
+                            TextButton(
+                                onClick = { onTabSelected(empty.targetTab) },
+                                modifier = Modifier.heightIn(min = 48.dp),
+                            ) { Text(empty.actionLabel) }
+                        }
                     }
                 }
                 items(filteredRecords, key = { it.origin.commonId }) { record ->
@@ -250,16 +261,47 @@ internal fun RecordsScreen(
     }
 }
 
-private enum class RecordFilter(val label: String) {
+internal enum class RecordFilter(val label: String) {
     ALL("전체"),
     SAJU("사주"),
-    TAROT("타로");
+    TAROT("타로"),
+    SAVED("기록");
 
     fun accepts(record: Envelope): Boolean = when (this) {
-        ALL -> true
+        ALL -> record.kind != Kind.PROFILE
         SAJU -> record.kind == Kind.SAJU
         TAROT -> record.kind == Kind.TAROT
+        SAVED -> record.origin.source == "mtj-native" && (record.kind == Kind.SAJU || record.kind == Kind.TAROT)
     }
+}
+
+internal data class RecordsEmptyState(
+    val title: String,
+    val body: String,
+    val actionLabel: String,
+    val targetTab: Int,
+)
+
+internal fun RecordFilter.emptyState(): RecordsEmptyState = when (this) {
+    RecordFilter.ALL -> RecordsEmptyState(
+        "아직 저장된 기록이 없습니다.", "사주 명식과 타로 결과를 저장하면 이곳에서 이어볼 수 있습니다.", "사주 보기", 1,
+    )
+    RecordFilter.SAJU -> RecordsEmptyState(
+        "저장한 사주가 없습니다.", "저장한 사주 명식을 이곳에서 다시 볼 수 있습니다.", "사주 보기", 1,
+    )
+    RecordFilter.TAROT -> RecordsEmptyState(
+        "저장한 타로가 없습니다.", "저장한 타로 리딩을 이곳에서 다시 볼 수 있습니다.", "타로 보기", 2,
+    )
+    RecordFilter.SAVED -> RecordsEmptyState(
+        "직접 저장한 기록이 없습니다.", "이 앱에서 저장한 명식과 타로 리딩을 이곳에서 다시 볼 수 있습니다.", "사주 보기", 1,
+    )
+}
+
+internal fun recordsKindLabel(kind: Kind): String = when (kind) {
+    Kind.SAJU -> "사주"
+    Kind.TAROT -> "타로"
+    Kind.PROFILE -> "프로필"
+    else -> "기록"
 }
 
 @Composable
@@ -267,7 +309,7 @@ private fun RecordRow(record: Envelope, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
         color = MaterialTheme.colorScheme.background,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().testTag("records-saved-row"),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().heightIn(min = 72.dp).padding(vertical = 12.dp),
@@ -275,7 +317,7 @@ private fun RecordRow(record: Envelope, onClick: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Surface(
-                shape = RoundedCornerShape(MtjTokens.ControlCorner),
+                shape = RoundedCornerShape(6.dp),
                 color = if (record.kind == Kind.SAJU) {
                     MaterialTheme.colorScheme.secondaryContainer
                 } else {
@@ -284,28 +326,32 @@ private fun RecordRow(record: Envelope, onClick: () -> Unit) {
                 modifier = Modifier.size(48.dp),
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        painter = painterResource(
-                            if (record.kind == Kind.SAJU) R.drawable.ic_saju_chart
-                            else R.drawable.ic_tarot_cards,
-                        ),
-                        contentDescription = null,
-                        tint = if (record.kind == Kind.SAJU) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
-                    )
+                    if (record.kind == Kind.SAJU || record.kind == Kind.TAROT) {
+                        Icon(
+                            painter = painterResource(
+                                if (record.kind == Kind.SAJU) R.drawable.ic_saju_chart else R.drawable.ic_tarot_cards,
+                            ),
+                            contentDescription = null,
+                            tint = if (record.kind == Kind.SAJU) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.primary,
+                        )
+                    } else {
+                        Icon(Icons.AutoMirrored.Filled.List, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
+                    }
                 }
             }
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    if (record.kind == Kind.SAJU) "사주 · ${record.displayText("title")}" else "타로 · ${record.displayText("title")}",
+                    "${recordsKindLabel(record.kind)} · ${record.displayText("title")}",
                     style = MaterialTheme.typography.titleSmall,
                 )
+                Text(record.displayText("summary"), style = MaterialTheme.typography.bodyMedium)
                 Text(
                     record.savedAtLabel(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "상세 보기")
         }
     }
 }

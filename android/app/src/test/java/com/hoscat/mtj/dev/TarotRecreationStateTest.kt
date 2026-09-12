@@ -128,6 +128,30 @@ class TarotRecreationStateTest {
         assertEquals(completed.questionAtStart, reopened.questionAtStart)
     }
 
+    @Test fun lastRowRetapAfterShuffleAndBackClosesCompletionAndPreservesOrder() {
+        val initial = start()
+        val lastRow = initial.shuffledIds.takeLast(6)
+        val selected = listOf(lastRow[0], lastRow[2], lastRow[5])
+        val shuffled = initial.copy(selectedIds = selected).reshufflePreservingSelection(deck, seed = 99L)
+        assertEquals(78, shuffled.shuffledIds.toSet().size)
+        selected.forEach { id ->
+            assertEquals(initial.shuffledIds.indexOf(id), shuffled.shuffledIds.indexOf(id))
+        }
+        val reopened = recreate(shuffled.finish(deck)).reopenSelection()
+        assertEquals(shuffled.shuffledIds, reopened.shuffledIds)
+        val retapped = toggleTarotSelection(
+            TarotSelectionState(reopened.shuffledIds, reopened.selectedIds, spread.cardCount), selected[1],
+        )
+        assertEquals(listOf(selected[0], selected[2]), retapped.selectedIds)
+        val partial = recreate(reopened.copy(selectedIds = retapped.selectedIds))
+        assertNull(partial.materialize(deck).result)
+        rejects { partial.finish(deck) }
+        val reselected = toggleTarotSelection(retapped, selected[1])
+        assertEquals(listOf(selected[0], selected[2], selected[1]), reselected.selectedIds)
+        val result = partial.copy(selectedIds = reselected.selectedIds).finish(deck).materialize(deck).result!!
+        assertEquals(reselected.selectedIds, result.reading.cards.map { it.cardId })
+    }
+
     @Test fun malformedPrimitiveStateFailsClosedAndFailureSurvivesAnotherRecreation() {
         val saved = start().copy(selectedIds = listOf(41, 3)).save()
         val mutations = listOf<Pair<Int, Any>>(

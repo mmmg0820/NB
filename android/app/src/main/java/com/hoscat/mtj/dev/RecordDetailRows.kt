@@ -6,6 +6,19 @@ import mtj.records.Value
 
 internal data class RecordDetailRow(val label: String, val value: String)
 
+internal fun Envelope.tarotResultSummary(): TarotResultSummary? {
+    if (kind != Kind.TAROT) return null
+    val snapshot = payload.obj("snapshot") ?: return null
+    val spread = snapshot.obj("spread") ?: return null
+    val reading = snapshot.obj("reading") ?: return null
+    return TarotResultSummary(
+        cardCount = spread.num("cardCount") ?: return null,
+        title = spread.str("title") ?: return null,
+        description = spread.str("subtitle") ?: return null,
+        question = reading.str("question") ?: return null,
+    )
+}
+
 internal fun Envelope.detailRows(): List<RecordDetailRow> = when (kind) {
     Kind.SAJU -> sajuDetailRows(payload)
     Kind.TAROT -> tarotDetailRows(payload)
