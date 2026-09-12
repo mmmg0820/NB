@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,12 +58,15 @@ import androidx.compose.ui.unit.dp
 import com.hoscat.core.model.GanjiGlyphKind
 import com.hoscat.core.model.SajuChart
 import com.hoscat.core.model.toGanjiHanja
+import com.hoscat.core.manse.AssetLunarDateDataSource
 import com.mtj.design.MtjBottomActionScaffold
 import com.mtj.design.MtjEmptyState
 import com.mtj.design.MtjTokens
 import java.time.LocalDate
 import java.time.ZoneId
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mtj.records.Envelope
 import mtj.records.Kind
 
@@ -75,6 +79,7 @@ internal fun MtjHomeScreen(
     onOpenRecord: (String) -> Unit,
     onNavigate: (Int) -> Unit,
 ) {
+    val context = LocalContext.current
     var records by remember { mutableStateOf<List<Envelope>?>(null) }
     var loadError by remember { mutableStateOf(false) }
     var refresh by remember { mutableIntStateOf(0) }
@@ -94,6 +99,14 @@ internal fun MtjHomeScreen(
     }
 
     val date = LocalDate.now(ZoneId.of("Asia/Seoul"))
+    var todayGanji by remember(date) { mutableStateOf<String?>(null) }
+    LaunchedEffect(date) {
+        todayGanji = withContext(Dispatchers.IO) {
+            runCatching {
+                AssetLunarDateDataSource(context).dateBySolarDate(date.toString())?.ganjiDay
+            }.getOrNull()
+        }
+    }
     MtjBottomActionScaffold(0, onNavigate, showActionDock = false, actions = {}) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -129,7 +142,10 @@ internal fun MtjHomeScreen(
                             HoscatBrandMark()
                         }
                         Text(
-                            "${date.monthValue}월 ${date.dayOfMonth}일",
+                            buildString {
+                                append("${date.monthValue}월 ${date.dayOfMonth}일")
+                                todayGanji?.let { append(" * ${it}일") }
+                            },
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )

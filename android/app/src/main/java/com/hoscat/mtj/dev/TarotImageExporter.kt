@@ -112,17 +112,17 @@ internal object TarotImageExporter {
 
     private fun wrapText(text: String, paint: Paint, maxWidth: Int): List<String> {
         val lines = mutableListOf<String>()
-        var current = ""
-        text.trim().split(Regex("\\s+")).forEach { word ->
-            val candidate = if (current.isEmpty()) word else "$current $word"
-            if (current.isNotEmpty() && paint.measureText(candidate) > maxWidth) {
-                lines += current
-                current = word
-            } else {
-                current = candidate
+        var remaining = text.trim()
+        while (remaining.isNotEmpty()) {
+            val count = paint.breakText(remaining, true, maxWidth.toFloat(), null).coerceAtLeast(1)
+            var end = count
+            if (count < remaining.length) {
+                val whitespace = remaining.lastIndexOf(' ', count - 1)
+                if (whitespace > 0) end = whitespace
             }
+            lines += remaining.substring(0, end).trimEnd()
+            remaining = remaining.substring(end).trimStart()
         }
-        if (current.isNotEmpty()) lines += current
         return lines.ifEmpty { listOf("질문 없음") }
     }
 }

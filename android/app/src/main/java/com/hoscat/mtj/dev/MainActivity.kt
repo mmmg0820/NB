@@ -109,12 +109,9 @@ private fun MtjApp(
     val chart = (evaluation as? MtjSajuEvaluation.Accepted)?.chart
     LaunchedEffect(saveBatch?.lastOrNull()?.origin?.commonId) {
         val batch = saveBatch ?: return@LaunchedEffect
-        try {
-            store.insert(batch)
+        if (runAutomaticSave { store.insert(batch) }) {
             saveMessage = "기록에 자동 저장했습니다."
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (_: Exception) {
+        } else {
             saveMessage = "자동 저장하지 못했습니다. 정보를 다시 확인해주세요."
         }
     }

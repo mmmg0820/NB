@@ -153,12 +153,9 @@ internal fun TarotScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(saveRecord?.origin?.commonId) {
         val record = saveRecord ?: return@LaunchedEffect
-        try {
-            store.insert(listOf(record))
+        if (runAutomaticSave { store.insert(listOf(record)) }) {
             saveMessage = "기록에 자동 저장했습니다."
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (_: Exception) {
+        } else {
             saveMessage = "자동 저장하지 못했습니다. 다시 결과를 열어주세요."
         }
     }
@@ -239,19 +236,11 @@ internal fun TarotScreen(
                         }
                         item {
                             MtjQuietPanel(Modifier.fillParentMaxWidth()) {
-                                TarotSpreadOverview(snapshot, Modifier.fillMaxWidth())
-                            }
-                        }
-                        itemsIndexed(snapshot.reading.cards, key = { _, item -> item.order }) { index, card ->
-                            MtjQuietPanel(Modifier.clickable(role = Role.Button) { detailCardIndex = index }) {
-                                Text("${card.order}. ${card.positionLabel}", style = MaterialTheme.typography.titleMedium)
-                                TarotArt(
-                                    card.cardId,
-                                    card.nameKr,
-                                    imageRotationDegrees = detailTarotCardRotation(card.directionLabel),
-                                    detailHeight = 248.dp,
+                                TarotSpreadOverview(
+                                    snapshot = snapshot,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    onCardClick = { detailCardIndex = it },
                                 )
-                                Text("${card.nameKr} · ${card.directionLabel}", style = MaterialTheme.typography.titleMedium)
                             }
                         }
                     }
@@ -679,7 +668,11 @@ private fun TarotCardBack(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun TarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modifier = Modifier) {
+private fun TarotSpreadOverview(
+    snapshot: MtjResultSnapshot,
+    modifier: Modifier = Modifier,
+    onCardClick: (Int) -> Unit = {},
+) {
     val cards = snapshot.reading.cards
     val labels = remember(cards) {
         cards.map { card ->
@@ -709,7 +702,7 @@ private fun TarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modifier 
         .toFloat()
     BoxWithConstraints(modifier) {
         if (snapshot.spread.layoutId == "wheel_of_fortune" && cards.size == 8) {
-            WheelTarotSpreadOverview(snapshot, Modifier.fillMaxWidth())
+            WheelTarotSpreadOverview(snapshot, Modifier.fillMaxWidth(), onCardClick)
             return@BoxWithConstraints
         }
         val availableWidthPx = constraints.maxWidth.toFloat()
@@ -795,9 +788,7 @@ private fun TarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modifier 
             limits = limits,
             overlapAllowance = tarotSpreadOverviewOverlapAllowance(snapshot.spread.layoutId),
             minimumReadableLabelWidth = minimumReadableLabelWidth,
-        ).let { selectedMode ->
-            if (density.fontScale >= 1.3f) TarotSpreadOverviewMode.OrderedFallback else selectedMode
-        }
+        )
         val geometry = (secondPass as? SpreadGeometryResult.Success)?.geometry
         if (mode == TarotSpreadOverviewMode.Spatial && geometry != null) {
             SpatialTarotSpreadOverview(
@@ -807,24 +798,29 @@ private fun TarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modifier 
                 labelStyle = labelStyle,
                 horizontalOffsetPx = ((availableWidthPx - geometry.canvasExtent.width) / 2f).coerceAtLeast(0f),
                 modifier = Modifier.fillMaxWidth(),
+                onCardClick = onCardClick,
             )
         } else {
-            OrderedTarotSpreadOverview(snapshot, labels, Modifier.fillMaxWidth())
+            Text(
+                "이 스프레드는 현재 사용할 수 없습니다.",
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.fillMaxWidth().padding(vertical = 24.dp),
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
 
 @Composable
-private fun WheelTarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modifier = Modifier) {
+private fun WheelTarotSpreadOverview(
+    snapshot: MtjResultSnapshot,
+    modifier: Modifier = Modifier,
+    onCardClick: (Int) -> Unit,
+) {
     val density = LocalDensity.current
+    var selectedIndex by rememberSaveable(snapshot) { mutableIntStateOf(0) }
     BoxWithConstraints(
-        modifier
-            .aspectRatio(1f)
-            .clearAndSetSemantics {
-                contentDescription = snapshot.reading.cards.joinToString(", ") { card ->
-                    "${card.order}번 ${card.positionLabel}, ${card.nameKr}, ${card.directionLabel}"
-                }
-            },
+        modifier.aspectRatio(1f),
     ) {
         val cardWidth = 46.dp
         val cardHeight = cardWidth / TAROT_CARD_ASPECT_RATIO
@@ -845,16 +841,32 @@ private fun WheelTarotSpreadOverview(snapshot: MtjResultSnapshot, modifier: Modi
                         )
                     }
                     .size(cardWidth, cardHeight)
+                    .clickable(role = Role.Button) {
+                        selectedIndex = index
+                        onCardClick(index)
+                    }
+                    .semantics {
+                        contentDescription = "${card.order}번 ${card.positionLabel}, ${card.nameKr}, ${card.directionLabel}"
+                        stateDescription = if (selectedIndex == index) "위치명 표시 중" else ""
+                    }
                     .graphicsLayer { rotationZ = rotation }
-                    .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(MtjTokens.TarotFrameCorner))
-                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(MtjTokens.TarotFrameCorner)),
+                    .background(
+                        if (selectedIndex == index) MaterialTheme.colorScheme.primaryContainer
+                        else MaterialTheme.colorScheme.surfaceVariant,
+                        RoundedCornerShape(MtjTokens.TarotFrameCorner),
+                    )
+                    .border(
+                        if (selectedIndex == index) 3.dp else 1.dp,
+                        if (selectedIndex == index) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                        RoundedCornerShape(MtjTokens.TarotFrameCorner),
+                    ),
             ) {
                 TarotArt(card.cardId, card.nameKr, Modifier.fillMaxSize().padding(2.dp), fixedBounds = true)
                 TarotSpreadNumberBadge(card.order, Modifier.align(Alignment.TopStart).size(18.dp))
             }
         }
         Text(
-            "운명의\n수레바퀴",
+            "${snapshot.reading.cards[selectedIndex].order}.\n${snapshot.reading.cards[selectedIndex].positionLabel}",
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -871,6 +883,7 @@ private fun SpatialTarotSpreadOverview(
     labelStyle: androidx.compose.ui.text.TextStyle,
     horizontalOffsetPx: Float,
     modifier: Modifier = Modifier,
+    onCardClick: (Int) -> Unit,
 ) {
     val density = LocalDensity.current
     val canvasHeight = with(density) { ceil(geometry.canvasExtent.height.toDouble()).toFloat().toDp() }
@@ -892,8 +905,11 @@ private fun SpatialTarotSpreadOverview(
                         with(density) { geometry.cardWidth.toDp() },
                         with(density) { geometry.cardHeight.toDp() },
                     )
-                    .zIndex(index.toFloat())
-                    .clearAndSetSemantics { },
+                    .clickable(role = Role.Button) { onCardClick(index) }
+                    .semantics {
+                        contentDescription = "${card.order}번 ${card.positionLabel}, ${card.nameKr}, ${card.directionLabel}"
+                    }
+                    .zIndex(index.toFloat()),
             ) {
                 Box(
                     modifier = Modifier
